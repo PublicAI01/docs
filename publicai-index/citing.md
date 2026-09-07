@@ -8,7 +8,13 @@ Always give the snapshot date; the table changes daily. A filtered view’s URL 
 
 ## Badge
 
-_Planned._ An SVG badge for a model’s README or launch post — `Ranked #3 on PublicAI Index · Coding` — linking to the filtered view that shows it. Badges render the live position; the alt text carries the snapshot date.
+Every model card on the Index shows its badge with ready-to-paste Markdown:
+
+```markdown
+[![PublicAI Index](https://publicai.io/model-index/badge?model=claude-fable-5-1)](https://publicai.io/model-index?q=Claude%20Fable%205.1)
+```
+
+Add `&scope=domain:Tool use` (or any category or domain) for a vertical. The badge renders the live position — `#1 · 69.1`, `Tool use #18✱ · 59.4`, `provisional` — so it never goes stale; the tooltip carries the snapshot date. ✱ means placed by report figures.
 
 ## Terms
 

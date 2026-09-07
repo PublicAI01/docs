@@ -26,6 +26,14 @@ Each row: `position`, `name`, `org`, `family`, `index`, `estimatedIndex`, `scope
 
 When no recognised board measures the scope, the response carries `scopeBoards: 0`, `scopeReports` and a `warning`.
 
+## What changed
+
+`GET /model-index/api?since=2026-09-01&minDelta=3` — sources added or removed, models that entered the Overall ranking, moves of `minDelta` places or more, models no longer listed, between the last snapshot on or before `since` and the latest. Poll this instead of re-reading the ranking; snapshots refresh daily.
+
+## Badge
+
+`GET /model-index/badge?model=<id>[&scope=domain:Tool use]` — an SVG showing the live position (`#1 · 69.1`, `Tool use #18✱ · 59.4`, `provisional`, `~55✱ provisional`). Cacheable for an hour; the tooltip carries the snapshot date.
+
 ## One model
 
 `GET /model-index/api?model=claude-fable-5-1` (id or name) — everything above plus `byCategory`, `byDomain`, `catalog` (context, prices, modalities, open weights) and `figures[]`: every source figure with `source`, `kind`, `measure`, `label` (as printed), `raw`, `rawLabel`, `stderr`, `normalized`, `url`, `retrievedAt`.

@@ -6,7 +6,7 @@ Live at [publicai.io/model-index](https://publicai.io/model-index).
 
 ## What it is
 
-- **Recognised leaderboards** (unmarked): LMArena Text, Artificial Analysis (Intelligence Index, GDPval-AA, AA-Briefcase), Terminal-Bench, ARC-AGI-2, LiveBench. Read from each publisher’s page; every figure links back to it.
+- **Recognised leaderboards** (unmarked), fifteen from fourteen publishers: LMArena Text, Artificial Analysis (Intelligence Index, GDPval-AA, AA-Briefcase), Terminal-Bench, ARC-AGI-2, LiveBench, LiveCodeBench, Aider polyglot, BFCL, OSWorld, MMMU-Pro, Kagi, SimpleBench, and Vals.ai’s twenty-two evaluations (legal, finance, tax, medical, cybersecurity, IT operations and more). Read from each publisher’s page; every figure links back to it.
 - **Reports ✱**: launch posts and third-party write-ups. Indexed so brand-new models appear before the boards list them, but marked, discounted and never in the Overall ranking.
 - **Catalogs**: OpenRouter (callable ids, context, price) and Hugging Face (parameter counts). Never scored.
 

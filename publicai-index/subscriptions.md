@@ -1,18 +1,16 @@
 # Subscriptions
 
-_Planned. Shipping in this order._
-
 ## For people
 
-- **Index Weekly** — a Monday email: biggest movers, new entrants, new boards, one chart. Sign up on the Index page.
-- **Watch a view** — subscribe to any filtered view (its URL) and receive only that view’s card and changes.
-- **RSS** — `https://publicai.io/model-index/feed.xml`, one item per snapshot.
+- **Index Weekly** — a Monday email: the top ten, the biggest movers, new entrants and new sources, one chart. Sign up in the sidebar of the [Index](https://publicai.io/model-index).
+- **RSS** — [`publicai.io/model-index/feed.xml`](https://publicai.io/model-index/feed.xml): one item per snapshot, listing what changed.
+- **Watch a view** — _planned_: subscribe to any filtered view (its URL) and receive only that view's card and changes.
 
 ## For agents
 
-- **Poll** — `GET /model-index/api/changes?since=YYYY-MM-DD`: new models, rank moves, new sources since that date. `ETag` supported. MCP tool `whats_new({ since })`.
-- **Push** — register a webhook with a filter (`family`, `scope`, threshold); each snapshot that matches is POSTed as signed JSON (HMAC-SHA256 in `X-PublicAI-Signature`). Register via `POST /model-index/api/subscriptions` or the MCP tool `subscribe({ url, filter })`.
+- **Poll** — `GET /model-index/api?since=YYYY-MM-DD` or the MCP tool `whats_new({ since })`. See [API](api.md).
+- **Push** — _planned_: register a webhook with a filter (`family`, `scope`, threshold); each snapshot that matches is POSTed as signed JSON.
 
 ## Cadence
 
-Snapshots refresh daily; notifications go out only when something changed. Weekly digest on Mondays. Instant: a new board is added, a watched model moves three places or more, a watched model gains an Overall rank.
+Snapshots refresh daily at 06:00 UTC; the feed and `since` report only what changed. Index Weekly goes out Mondays at 09:00 UTC.
