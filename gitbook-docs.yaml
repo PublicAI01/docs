@@ -1,0 +1,17 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+site:
+  title: PublicAI - Cooking Food for AI
+  structure:
+    - type: space
+      key: space-1
+      title: PublicAI - Get Paid to Power Diverse Data for AI
+      path: publicai-documentation
+      default: true
+      content:
+        directory: ./publicai-documentation
+    - type: space
+      key: space-2
+      title: Token
+      path: token
+      content:
+        directory: ./token
