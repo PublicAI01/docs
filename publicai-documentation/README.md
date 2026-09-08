@@ -1,18 +1,37 @@
 ---
-hidden: true
+description: >-
+  PublicAI works on the two things the AI industry keeps private: the data
+  models learn from, and the numbers models are judged by.
 ---
 
 # 🚀 Overview
 
-<figure><img src=".gitbook/assets/image (13).png" alt=""><figcaption></figcaption></figure>
+A model is shaped by two things almost nobody outside a lab gets to see: the data it learned from, and the evidence about how good it is. Who produced that data, whether they agreed, whether they were paid. Which benchmarks, run by whom, weighted how.
 
-## PublicAI - Building the Human Layer of AI
+PublicAI builds one product for each, and both of them in the open.
 
-PublicAI revolutionizes the AI ecosystem by delivering premium, human-generated AI training data while enabling individuals worldwide to monetize their expertise. Leveraging a decentralized network of worldwide verified contributors, our platform ensures unparalleled data quality through rigorous skill validation and a stake-slashing mechanism.&#x20;
+## 🛰️ Trajector
 
-As AI drives job displacement, PublicAI offers a way for everyone to stay involved and earn in the AI economy. Human-in-the-loop (HITL) isn’t just for AI training—it’s increasingly essential during the inference stage, where AI makes real-world decisions. As AI replaces routine jobs, humans must shift into higher-value roles alongside it. PublicAI is building a decentralized human layer for inference, enabling people to validate, review, and guide AI outputs in real time. This new role is independent from training data—it's about keeping humans meaningfully in the loop through the AI-caused job crisis.
+An open-source command-line tool that turns your own Claude Code sessions into compensated data contributions.
 
-As concerns grow around AI models being trained on synthetic data,[ a recent study](https://www.nature.com/articles/s41586-024-07566-y) published in Nature confirms that AI models trained on AI-generated synthetic data experience performance collapse, highlighting the limitations of relying on AI-generated outputs for future model training. In response to this growing concern, PublicAI has rapidly emerged as a leader in Human-in-the-loop (HITL), generating over $14 million in client revenue and building a global workforce of 1 million contributors. By focusing on real, verified data, PublicAI ensures AI systems remain accurate, diverse, and grounded in human truth.
+With your explicit per-project consent it routes that project's API traffic through a proxy on your own machine, records the exchange, masks secrets locally, and uploads only the redacted result. Nothing is captured until you opt a project in — and a project you have not opted in is not merely excluded by policy, the code path to record it does not exist.
 
-Join us in shaping an equitable and transformative AI-powered world!
+What comes out is real coding-agent work, the messy multi-turn kind that is hard to buy and impossible to fake. AI labs license it; the people who produced it are the ones paid.
 
+→ [Install it](publicai-trajector-cli/installation.md) · [Data and privacy](publicai-trajector-cli/data-and-privacy.md)
+
+## 📊 PublicAI Index
+
+The public LLM leaderboards, aggregated into one ranking — and no benchmark of our own.
+
+Every score traces back to a board someone else published. Figures from a launch post rather than a recognised board are marked ✱ and can never rank a model alone. The weighting is printed beside the table rather than kept as a trade secret, because a ranking you cannot audit is a ranking you should not cite.
+
+Free to read, free to query, and built for machines as much as people: a JSON API, an MCP server, and a feed of what changed.
+
+→ [Read the Index](https://docs.publicai.io/index) · [MCP for agents](https://docs.publicai.io/index/mcp)
+
+## Where to go next
+
+* [What PublicAI Builds](the-three-layers-of-publicai.md) — why these two, and how they fit together
+* [Philosophy & Principles](philosophy-and-principles.md)
+* [RoadMap](roadmap.md)

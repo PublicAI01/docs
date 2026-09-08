@@ -9,10 +9,14 @@ site:
       default: true
       content:
         directory: ./publicai-documentation
+    # The token has its entry in the site footer; keeping it out of the docs
+    # navigation leaves the two products PublicAI actually runs. Hidden, not
+    # removed: every /token URL still resolves.
     - type: space
       key: space-2
       title: Token
       path: token
+      hidden: true
       content:
         directory: ./token
     - type: space
