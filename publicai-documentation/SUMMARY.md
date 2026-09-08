@@ -10,7 +10,7 @@
   * [Rewards](publicai-trajector-cli/rewards.md)
   * [Data and privacy](publicai-trajector-cli/data-and-privacy.md)
   * [Troubleshooting](publicai-trajector-cli/troubleshooting.md)
-* [📖 The Three Layers of PublicAI](the-three-layers-of-publicai.md)
+* [📖 What PublicAI Builds](the-three-layers-of-publicai.md)
 * [📚 Philosophy & Principles](philosophy-and-principles.md)
 * [🪪 UAD License SBT](uad-license-sbt.md)
 * [🌎 World AI Data Protection Organization (WADO)](world-ai-data-protection-organization-wado.md)

@@ -23,7 +23,6 @@ _Here’s what we’re building in 2026. Priorities may evolve, but the mission 
 
 #### 2026 Q2 — Launch and scale
 
-* **Ship the DataHub mobile app** so more contributors can participate from anywhere.
 * **Scale language coverage toward 30+ languages** with **high-accuracy targets** on supported datasets and tasks.
 * **Boost throughput and efficiency** so we can grow revenue and rewards without sacrificing quality.
 * **Launch EmbodyAI (robotic data collection)** to start capturing real-world data for embodied AI.

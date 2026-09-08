@@ -1,59 +1,48 @@
 ---
-hidden: true
+description: >-
+  Two things the AI industry keeps private: the data models learn from, and the
+  numbers they are judged by. PublicAI works on both, in the open.
 ---
 
-# 📖 The Three Layers of PublicAI
+# 📖 What PublicAI Builds
 
-<figure><img src=".gitbook/assets/77 System Architecture2.png" alt=""><figcaption><p>The Three Layers of PublicAI</p></figcaption></figure>
+Modern models are shaped by two things almost nobody outside a lab gets to see. The first is the data they learn from — who produced it, whether that person agreed, whether they were paid. The second is the evidence about how good they are — which benchmarks, run by whom, weighted how.
 
-**DataHub (1st Layer)**
-
-* **Purpose**: The DataHub is the main platform for data campaigns and quality validation, where **uploaders** and **voters** collaborate to ensure high-quality data for AI training.
-* **Core Functions**:
-  * Hosts **data collection campaigns**, allowing uploaders to contribute datasets aligned with campaign instructions.
-  * Enables **voters** to assess the quality of uploaded data, ensuring alignment with specified requirements.
-  * Utilizes a **voting-based consensus mechanism** to maintain data quality and integrity.
-* **Key Features**:
-  * **Uploaders** participate in campaigns to earn **USDT** for high-quality contributions.
-  * **Voters** assess whether uploaded data meets campaign instructions by voting on its quality.
-  * **Rewards** contributors and voters based on their participation and alignment with the consensus (e.g., "hit" or "miss" the consensus).
+PublicAI builds one product for each.
 
 ***
 
-**Data Hunter (2nd Layer)**
+## 🛰️ Trajector — the data side
 
-* **Purpose**: Data Hunter is now focused on enabling **node operators** to support AI agents, improving data processing and community engagement.
-* **Core Functions**:
-  * Allows **node operators** to run AI agents via the **Data Hunter extension**, contributing computational resources for data quality checks in the DataHub.
-  * Facilitates active participation in the PublicAI ecosystem through tasks like replying to popular **X (formerly Twitter)** posts using AI(Reply to any popular post with views>1k).
-*   **Key Features**:
+[Trajector](publicai-trajector-cli/README.md) is an open-source command-line tool that turns your own Claude Code sessions into compensated data contributions.
 
-    * **Node Operators**:
-      * Provide computational resources to enhance AI agent efficiency, accelerating data validation in the DataHub.
-      * Use the **“AI Reply”** feature to interact with popular X posts, generating valuable AI feedback data.
+Run `trajector enable` inside a project and that project's API traffic is routed through a proxy on your own machine. The proxy forwards every request verbatim and records it on the side; secrets are masked locally, and only the redacted result is uploaded.
 
+* **Consent is per project, and it is structural.** Nothing is captured until you opt a project in. A project you have not opted in is not merely excluded by policy — the code path to record it does not exist.
+* **Forwarding is sacred.** Any failure on the recording side never interrupts your work. Streaming responses pass through unbuffered.
+* **Credentials never touch disk.** `Authorization` and `x-api-key` are not written to any file, in any state.
+* **Consent is revocable.** `disable`, `logout` and `uninstall` each undo a different amount, immediately.
 
+What comes out is real coding-agent work — the messy, multi-turn kind that is hard to buy and impossible to fake — contributed knowingly and paid for. AI labs license it; the people who produced it are the ones compensated.
 
-***
-
-**Blockchain and Smart Contracts (3rd Layer)**
-
-* **Purpose**: The blockchain layer ensures security, transparency, and fairness in managing data contributions and rewards.
-* **Core Functions**:
-  * Uses **smart contracts** to manage tasks like voter consensus, uploader rewards, and node operator incentives.
-  * Tracks and secures all activities, ensuring data provenance and immutability.
-  * Enables decentralized governance, allowing community members to influence platform developments.
-* **Key Features**:
-  * **Consensus Mechanism**: Implements a **Byzantine Fault Tolerance (BFT)** algorithm to verify data quality through decentralized voting.
-  * **Incentives and Penalties**: Rewards loyal contributors and penalizes malicious behavior using automated blockchain mechanisms.
-  * **Transparency**: Ensures all data lifecycle activities are transparent and tamper-proof.
+Start at [Installation](publicai-trajector-cli/installation.md), or read [Data and privacy](publicai-trajector-cli/data-and-privacy.md) first if that is the part you care about.
 
 ***
 
-#### **Summary of PublicAI Layers**
+## 📊 PublicAI Index — the measurement side
 
-| Layer                        | Purpose                                       | Key Components                             |
-| ---------------------------- | --------------------------------------------- | ------------------------------------------ |
-| DataHub                      | Campaign-based data contribution and voting   | Uploaders, voters, voting-based consensus  |
-| Data Hunter                  | Node operations and AI-powered engagement     | Node operators, AI Reply on X              |
-| Blockchain & Smart Contracts | Secure, transparent data lifecycle management | BFT consensus, smart contracts, governance |
+The [PublicAI Index](https://docs.publicai.io/index) aggregates the public LLM leaderboards into a single ranking, and runs no benchmark of its own.
+
+Every score traces back to a leaderboard someone else published. Figures that come from a launch post or a write-up rather than a recognised board are marked ✱ and can never rank a model on their own. The weighting is printed next to the table rather than kept as a trade secret, because a ranking you cannot audit is a ranking you should not cite.
+
+It is free to read, free to query, and built to be used by machines as much as people: a plain JSON API, an MCP server, an RSS feed of what changed. See [MCP](https://docs.publicai.io/index/mcp) for the four tools, or [Method](https://docs.publicai.io/index/method) for how the scores are actually computed.
+
+***
+
+## Why both
+
+They are the two ends of the same argument. Trajector is about where a model's training data comes from and who gets paid for it. The Index is about who decides a model is good and whether you are allowed to check their work. Neither is a market PublicAI wants to own — both are things that ought to be public, and currently are not.
+
+***
+
+The `$PUBLIC` token is documented separately: [Tokenomics](https://docs.publicai.io/token).
