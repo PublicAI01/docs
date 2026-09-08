@@ -32,6 +32,4 @@ Free to read, free to query, and built for machines as much as people: a JSON AP
 
 ## Where to go next
 
-* [What PublicAI Builds](the-three-layers-of-publicai.md) — why these two, and how they fit together
-* [Philosophy & Principles](philosophy-and-principles.md)
-* [RoadMap](roadmap.md)
+[What PublicAI Builds](the-three-layers-of-publicai.md) — why these two, and how they fit together.
