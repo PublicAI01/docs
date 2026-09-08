@@ -30,6 +30,3 @@ Free to read, free to query, and built for machines as much as people: a JSON AP
 
 → [Read the Index](https://docs.publicai.io/index) · [MCP for agents](https://docs.publicai.io/index/mcp)
 
-## Where to go next
-
-[What PublicAI Builds](the-three-layers-of-publicai.md) — why these two, and how they fit together.
