@@ -19,9 +19,3 @@ site:
       hidden: true
       content:
         directory: ./token
-    - type: space
-      key: space-3
-      title: PublicAI Index
-      path: index
-      content:
-        directory: ./publicai-index

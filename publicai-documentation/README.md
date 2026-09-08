@@ -28,5 +28,5 @@ Every score traces back to a board someone else published. Figures from a launch
 
 Free to read, free to query, and built for machines as much as people: a JSON API, an MCP server, and a feed of what changed.
 
-→ [Read the Index](https://docs.publicai.io/index) · [MCP for agents](https://docs.publicai.io/index/mcp)
+→ [Read the Index](publicai-index/README.md) · [MCP for agents](publicai-index/mcp.md)
 
