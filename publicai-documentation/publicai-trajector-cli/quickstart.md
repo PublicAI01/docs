@@ -2,6 +2,10 @@
 
 Four commands from a fresh install to a recorded, uploaded session.
 
+{% embed url="https://www.youtube.com/watch?v=QbyuXYJks08" %}
+Install, enable, work, upload — the whole flow in one sitting
+{% endembed %}
+
 ### 1. Pair the device
 
 ```sh
