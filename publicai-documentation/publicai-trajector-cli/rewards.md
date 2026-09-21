@@ -18,7 +18,7 @@ claude --model claude-opus-5
 export ANTHROPIC_MODEL=claude-opus-5
 ```
 
-Inside a running session you can also type `/model claude-opus-5` (or `/model claude-fable-5`).
+Inside a running session you can also type `/model claude-opus-5` (or `/model claude-fable-5` or `/model claude-fable-5-1`).
 
 What happens to everything else:
 
@@ -71,6 +71,35 @@ Notes on how this is counted:
 * Tool results are counted **once**, even though agents re-send them on every subsequent request in the same conversation. This is a deliberate choice: counting them per request would inflate long sessions, and the count needs to mean the same thing for everyone.
 * The count is computed identically on your machine and on the server, so what the CLI shows you and what you get paid for do not drift apart.
 
+#### Calls the recording proxy didn't see earn 25% of the token rate
+
+This page is the rule. The dashboard and the CLI state the conclusion and link here; when they differ from this page, this page is what you are paid by.
+
+The rule applies from 17 September 2026. It changes the USD amount of a reward, never the token count.
+
+**Definitions.**
+
+* A _call_ is one request to the model and its response. Rewards are computed per call.
+* The recording proxy **saw** a call when it handled that call's request and response on your machine. Every call of a session shown as _Recording proxy_ in **My data** was seen. In a session shown as _Proxy + local file_, each call counts on its own: the calls the proxy handled were seen, the calls it missed were not.
+* The proxy **didn't see** a call when neither of two things happened: the proxy did not handle it, and the CLI did not record it live. _Recorded live_ means the CLI was following the session file while the session was still running, and the parts of it reached our servers while the work was still going on — our clocks, not yours, decide that. A call of a session backfilled from your local history, or uploaded in one go after the work was finished, was not seen.
+
+**The rule.**
+
+* A call the proxy saw earns the full token rate: `tokens × rate`.
+* A call the proxy didn't see earns **25% of the token rate**: `tokens × rate × 0.25`.
+* The tokens of a call the proxy didn't see are still counted in full — in **Total Tokens Contributed**, in the **Tokens** column of **My data**, and against the daily volume caps. Only the USD amount is reduced.
+* Whether a session is accepted, held or rejected (§2) is decided separately from this rule. This rule only changes what an accepted call is worth.
+
+**What you see.** Each ledger entry records whether the proxy saw the call it paid for and the multiplier applied, so every amount in your balance can be traced back to this rule. **My data** shows, per session, how many of its calls the proxy didn't see and the amount earned at 25%; each chain line shows which of its calls those were. On a day when some of your calls weren't seen, `trajector status` says so too.
+
+**Not retroactive.** Calls credited before this rule took effect keep the amount they were credited at. The multiplier is written permanently into each ledger entry when the call is credited; a later change to the multiplier — in either direction — applies only to calls credited after that change, exactly as a change to the token rate does (§1). A call credited at 25% is not re-credited if the proxy later reports the same call.
+
+**Why the proxy is the witness.** The proxy is the part of Trajector that handles a call as it happens. A session file, on its own, is written by Claude Code and read after the fact: nothing in it can be checked against a record we made ourselves. Paying the full rate for that would make a fabricated session file worth as much as a real recording.
+
+**Why live recording counts too.** A session file that reaches us _while the session is still running_ carries one thing a file uploaded afterwards does not: the times its parts arrived at our servers, measured by our clocks. Work that is really happening arrives in step with itself — a morning of work cannot arrive in ten seconds. That arrival rhythm is ours, not yours, and it is what a live recording is paid on. Nothing you send us about when something happened is part of this: only when we received it.
+
+This matters most if you cannot run the proxy at all. The Claude desktop app talks to Anthropic directly and ignores the settings the CLI uses, so there is no proxy to run — those sessions are not a lower tier of trust, they simply have no proxy available. Running Claude Code through the CLI's recording proxy — the default when the CLI is installed and enabled — still means the proxy sees every call, and is the simplest way to earn the full rate.
+
 ***
 
 ### 2. When a reward lands in your balance
@@ -91,16 +120,16 @@ Common reasons a session is held:
 * **Thin sessions.** No real prompt from you, no tool call, and no file change. There is nothing to learn from a session where nothing happened.
 * **Quality gates.** The trajectory didn't meet the collection thresholds (for example, too few assistant turns, or a tool-error ratio high enough that the session is mostly failure noise).
 * **Fragments.** Content that is already fully contained in another session you uploaded.
+* **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. You can delete a held session yourself from **My data** at any time before you claim it.
 
 #### ❌ Rejected — never credited
 
-Rejection is reserved for two categories only — **fraud and compliance** — and it is final:
+Rejection is reserved for fraud and for content we will never license, and it is final:
 
 * **Forged trajectories.** Sessions that were not produced by a real agent run.
-* **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit means we cannot license that data, so it is not credited.
 * **The same content uploaded from more than one account.** One recording, one payment. Coordinated re-uploading across accounts is the thing this check exists to stop.
 
-Everything that is _not_ fraud or compliance is held for review rather than rejected.
+Everything else is held for review rather than rejected.
 
 ***
 
@@ -108,11 +137,13 @@ Everything that is _not_ fraud or compliance is held for review rather than reje
 
 The dashboard shows three numbers:
 
-| Number               | Meaning                                                               |
-| -------------------- | --------------------------------------------------------------------- |
-| **Claimable Reward** | What you can withdraw right now. Goes to $0 when you claim.           |
-| **Total Reward**     | Everything you have ever earned. Does **not** go down when you claim. |
-| **Total Tokens**     | Lifetime tokens credited across all accepted sessions.                |
+| Number               | Meaning                                                                                                     |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Claimable Reward** | What you can withdraw right now. Goes to $0 when you claim.                                                 |
+| **Total Reward**     | Everything you have ever earned. Does **not** go down when you claim.                                       |
+| **Total Tokens**     | Lifetime tokens credited across all accepted sessions, counted in full whether or not the proxy saw the call. |
+
+Total Reward isn't simply Total Tokens × rate: tokens are counted in full for every credited call, while the USD amount is the full rate for calls the recording proxy saw and 25% of it for calls it didn't see (§1, _Calls the recording proxy didn't see_).
 
 Below them you'll find a breakdown by agent type (Claude Code, Cursor, Codex, Gemini CLI, …) with tokens and session counts, and a daily contribution chart so you can see your contribution rhythm over time.
 
@@ -173,7 +204,7 @@ You can browse every session you have uploaded under **My data**, including the 
 
 **Sessions whose reward you have not yet withdrawn can be deleted yourself.** Deleting one blanks the stored payload and **reverses that session's reward out of your claimable balance**. The exact amount to be reversed is shown in the confirmation dialog before you commit. This unwinds the exchange cleanly: we no longer hold the data, and we no longer owe you for it.
 
-**Sessions whose reward has already been paid out cannot be deleted with a button.** That data is the consideration for a payment already sent on chain. Submit a deletion request instead: it goes to a review queue, and when it is approved the payload is erased for real. **The money already paid is not clawed back** — your right to erasure does not depend on returning it.
+**Sessions whose reward has already been paid out cannot be deleted with a button.** That data is the consideration for a payment already sent on chain. Submit a deletion request instead: it goes to a review queue, where one admin reviews it and a second admin carries out the deletion, and then the payload is erased for real. **The money already paid is not clawed back** — your right to erasure does not depend on returning it.
 
 Two things survive a deletion, deliberately:
 

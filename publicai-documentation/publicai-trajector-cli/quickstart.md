@@ -2,7 +2,7 @@
 
 Four commands from a fresh install to a recorded, uploaded session.
 
-{% embed url="https://www.youtube.com/watch?v=QbyuXYJks08" %}
+{% embed url="https://www.youtube.com/watch?v=Kf4_Vkw1N7Q" %}
 Install, enable, work, upload — the whole flow in one sitting
 {% endembed %}
 
@@ -22,6 +22,24 @@ trajector enable
 ```
 
 `enable` shows the data contribution agreement in full and waits for an explicit `yes`. Nothing has been captured before this point and nothing will be captured from any project where you have not done this.
+
+#### Choosing a recording shape
+
+`enable` installs one of two shapes, and says which one it installed. `status` and `doctor` say which shape a project records in.
+
+```sh
+trajector enable              # proxy + session files + git observation
+trajector enable --no-proxy   # session files + git observation only
+```
+
+* **`trajector enable`** injects the base URL and the session hooks. Calls go through the recording proxy, the project's session files are read while sessions run, and the state of the project's git repository is observed. Inside the project, `/remote-control` is not available; `claude remote-control` still works and both sources are still recorded.
+* **`trajector enable --no-proxy`** installs the session hooks and injects no base URL. The project records from its session files and git only, and `/remote-control` stays available inside the project.
+
+{% hint style="info" %}
+**Desktop Claude Code sessions cannot go through the proxy.** The desktop host sets its own API base URL and ignores the settings the CLI writes for a project, so no proxy can sit in front of it. Those sessions are still recorded from their session files, and from 0.3.1 a session file recorded live counts at the full rate — see Rewards for what "recorded live" means.
+{% endhint %}
+
+If you upgrade with `trajector upgrade` and the release changed the data agreement, recording pauses and the next `trajector enable` asks you to confirm the updated agreement once.
 
 After you accept, it:
 
@@ -63,7 +81,8 @@ trajector status
 ```
 
 ```
-trajector 0.1.0
+Recording: on (1 project(s))
+trajector 0.3.3
 
 Device
   Signed in.
@@ -72,8 +91,8 @@ Project /path/to/your-project
   Contributing; recording is on for this project.
 
 Proxy
-  Running at 127.0.0.1:41100: version 0.1.0, up 4m12s.
-  Recorded today: 3 (SSE degraded: 0, dropped: 0).
+  Running at 127.0.0.1:41100: version 0.3.3, up 4m12s.
+  Recorded since it started: 3 (SSE degraded: 0, dropped: 0).
 
 Spool
   184.2 KiB of 2.0 GiB used.
@@ -81,6 +100,8 @@ Spool
 Uploads
   Never uploaded.
 ```
+
+The first line is the verdict: `Recording: on (N project(s))` when something is being recorded, and `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)` or `Recording: off in this project` when nothing is. `status` exits `1` when it printed an error.
 
 Uploads happen on their own once enough has accumulated. To send what is there right now:
 
