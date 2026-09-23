@@ -8,17 +8,17 @@ The short version:
 
 ### During the beta: what is collected
 
-Only **`claude-fable-5`**, **`claude-fable-5-1`** and **`claude-opus-5`** coding sessions are collected and rewarded right now. If you are already on one of those, there is nothing to do. Otherwise switching takes one flag:
+Only **`claude-fable-5`**, **`claude-fable-5-1`**, **`claude-opus-5`** and **`claude-opus-5-5`** coding sessions are collected and rewarded right now. If you are already on one of those, there is nothing to do. Otherwise switching takes one flag:
 
 ```bash
 # One-off: launch Claude Code on a collected model
-claude --model claude-opus-5
+claude --model claude-opus-5-5
 
 # Make it stick for every session (add to your shell profile)
-export ANTHROPIC_MODEL=claude-opus-5
+export ANTHROPIC_MODEL=claude-opus-5-5
 ```
 
-Inside a running session you can also type `/model claude-opus-5` (or `/model claude-fable-5` or `/model claude-fable-5-1`).
+Inside a running session you can also type `/model claude-opus-5-5` (or `/model claude-opus-5`, `/model claude-fable-5` or `/model claude-fable-5-1`).
 
 What happens to everything else:
 
