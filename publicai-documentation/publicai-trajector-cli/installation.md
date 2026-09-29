@@ -15,10 +15,10 @@ If `~/.local/bin` is not on your `PATH`, the script tells you the line to add fo
 | Variable                | Effect                                         |
 | ----------------------- | ---------------------------------------------- |
 | `TRAJECTOR_INSTALL_DIR` | Install somewhere other than `~/.local/bin`    |
-| `TRAJECTOR_VERSION`     | Pin a release, e.g. `TRAJECTOR_VERSION=v0.3.3` |
+| `TRAJECTOR_VERSION`     | Pin a release, e.g. `TRAJECTOR_VERSION=v0.3.5` |
 
 ```sh
-TRAJECTOR_INSTALL_DIR=/usr/local/bin TRAJECTOR_VERSION=v0.3.3 \
+TRAJECTOR_INSTALL_DIR=/usr/local/bin TRAJECTOR_VERSION=v0.3.5 \
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/PublicAI01/trajector-cli/main/install.sh)"
 ```
 
@@ -26,13 +26,23 @@ TRAJECTOR_INSTALL_DIR=/usr/local/bin TRAJECTOR_VERSION=v0.3.3 \
 **On macOS, install with the command above rather than downloading the archive in a browser.** Releases are not code-signed yet, and macOS marks anything a browser downloaded. Unpacking such an archive in Finder passes that mark to the binary, and Gatekeeper then refuses to run it. A download made by `curl` carries no mark.
 {% endhint %}
 
+#### Homebrew
+
+On macOS, Homebrew works too:
+
+```sh
+brew install publicai01/tap/trajector
+```
+
+A Homebrew install is updated by `brew upgrade trajector`; `trajector upgrade` says so rather than replacing a binary Homebrew manages.
+
 ### Windows
 
 There is no Windows build yet — the [releases page](https://github.com/PublicAI01/trajector-cli/releases) carries macOS and Linux archives only, until that platform has been tested end to end against the service.
 
 Run trajector under [WSL](https://learn.microsoft.com/windows/wsl/install): install a Linux distribution, then run the same install command above inside it.
 
-Homebrew is not available yet.
+Scoop is not available.
 
 ### Two recording shapes
 
@@ -78,7 +88,7 @@ If a package manager owns the installation, `upgrade` says so and hands the job 
 
 A release that changes the data agreement bumps its version, and recording pauses until you reconfirm. After upgrading, the next `trajector enable` shows the updated agreement and asks you to accept it once; forwarding is untouched while the pause stands.
 
-0.3.3 is such a release: the agreement moves to version `2026-09-21`, so upgrading to it asks you to confirm the agreement once.
+0.3.5 is such a release: the agreement moves to version `2026-09-29`, so upgrading to it asks you to confirm the agreement once.
 
 ### Uninstalling
 

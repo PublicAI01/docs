@@ -67,7 +67,7 @@ A session's token total is the sum of three parts:
 Notes on how this is counted:
 
 * When your model provider reports exact token usage, that number is used as-is. When it doesn't report a field, that field is estimated with a deterministic counter.
-* Embedded images and other base64 blobs are stripped before counting. You are paid for text that a human or a model actually wrote.
+* Embedded images and other base64 blobs are stripped before counting. You are paid for text that a human or a model actually wrote. Turning image and document upload off in the CLI (`upload_images_and_documents`) does not change your rewards.
 * Tool results are counted **once**, even though agents re-send them on every subsequent request in the same conversation. This is a deliberate choice: counting them per request would inflate long sessions, and the count needs to mean the same thing for everyone.
 * The count is computed identically on your machine and on the server, so what the CLI shows you and what you get paid for do not drift apart.
 

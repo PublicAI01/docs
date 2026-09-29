@@ -2,7 +2,7 @@
 
 The client is fully open source. Every statement on this page can be checked against the code in [PublicAI01/trajector-cli](https://github.com/PublicAI01/trajector-cli), and the authoritative version lives in that repository's `PRIVACY.md`.
 
-This page describes version **`2026-09-21`** of the data agreement — the version `trajector enable` shows you in full and records when you accept it. The agreement and this page state the same terms and change together; the version is the day the build carrying those terms was released.
+This page describes version **`2026-09-29`** of the data agreement — the version `trajector enable` shows you in full and records when you accept it. The agreement and this page state the same terms and change together; the version is the day the build carrying those terms was released.
 
 ### What is collected
 
@@ -64,6 +64,13 @@ Recorded calls, recorded session lines, and recorded git observations wait in a 
 
 Before anything is uploaded, records from every source pass the **same local redaction pass**. It masks secrets — API keys, tokens, passwords, credential-shaped strings — and personally identifying strings such as email addresses and phone numbers, while preserving JSON structure, message order, tool-call pairing, and thinking signatures.
 
+Besides the shapes of known kinds of credentials, the pass recognises a credential by what stands around it:
+
+* **By the key that names it.** A value under a key such as `password`, `token`, `secret`, `api_key`, `client_secret` or `SIGNING_KEY` is masked when it has the shape of a secret — long enough, and mixing letters with digits or symbols — and is not a placeholder, a name, or a reference such as a path, a URL or a variable. It does not matter whether it is written as `key: value`, `key=value`, a JSON field, or the two arguments of a call such as `setenv("KEY", "…")`.
+* **By a login target beside it.** A password within three lines of `user@host`, an IPv4 address or a `host:` line is masked when it is at least four characters long, and so is the password after `user@host pass` and the `-p` argument of `sshpass`.
+* **Each key on its own.** Several keys on one line, as in `api_key=…&client_secret=…`, are each read on their own.
+* **What is already hidden stays as it is.** A value that holds `***` or `...`, such as `sk-****Ab12`, is a key shown masked or cut short, and neither rule above takes it for a secret. Under a database password key, in a connection string, and in a JSON password beside host and user keys, such a value is still masked.
+
 #### Masked, or uploaded as observed
 
 | Masked before upload                                                                                     | Uploaded as observed                                                                                          |
@@ -71,10 +78,25 @@ Before anything is uploaded, records from every source pass the **same local red
 | Secrets and personally identifying strings, in records from every source                                 | Model identifiers, thinking signatures, usage figures                                                         |
 | The few session-record fields whose value is, by construction, the directory the session ran in — `cwd` is the one you will recognize — replaced with a placeholder | Every other path a record holds, including the working directory stated in the environment description Claude Code writes at the start of a session, and any file your messages and tool results name |
 | In a git record, the branch name and the changed paths                                                   | In a git record, the commit and blob identifiers, exactly as git printed them                                 |
+| Images and documents, once you turn their upload off — each is replaced with a placeholder               | Images and documents, by default: masking cannot see what they show — see below                              |
 
 Trajector does not rewrite an observation, because rewriting it would destroy the record.
 
-**Unredacted data never leaves your machine.** The raw copy stays on the machine it was recorded on.
+**Unredacted text never leaves your machine.** Images and documents are not text: redaction cannot see what they show, so they are uploaded as recorded unless you turn their upload off.
+
+#### Images and documents
+
+Claude Code sends an image or a PDF document to the API as base64 content inside a message: a screenshot you paste, or a file that a tool such as `Read` opens. Trajector records this content with the rest of the call. **Redaction cannot see what an image or a PDF shows**: it masks text, and this content is not text. A key, a password, or another person's personal data in a screenshot goes up with it.
+
+You can stop this. Set `"upload_images_and_documents": false` in `config.json` in your user config directory — see Files, configuration, and environment. Then each image and document is uploaded only as a placeholder: the SHA-256 digest of its base64 content, its media type, its size in bytes and, for a PNG, JPEG or GIF image, its width and height.
+
+* **What it covers.** The image or document in the call, and the copy Claude Code keeps in its session file when a tool such as `Read` opens an image or a PDF.
+* **What it does not cover.** Older versions of Claude Code may also keep the images a notebook's cells output, in the session file's record of a `Read` of that notebook. That copy is uploaded whatever the setting says; current versions of Claude Code do not keep it.
+* **When it takes effect.** The next upload uses the setting, also for records captured before you changed it. You do not have to restart the proxy.
+* **When the setting is absent**, images and documents are uploaded.
+* **When `config.json` cannot be read** while the proxy runs, images and documents go up as placeholders until it can, and `trajector status` says so and why.
+
+`trajector status` always shows which of the two is in effect. Your rewards do not change with this setting. When data from a session that has placeholders is delivered, it is labelled as such.
 
 #### Segments held on this machine
 
@@ -97,12 +119,16 @@ A consent record that cannot be read or parsed also pauses recording device-wide
 `trajector logout` pauses recording device-wide in the same way; forwarding is unaffected in every case, and logging in again resumes.
 
 {% hint style="info" %}
-**Known limitation:** masking applies to values only. A secret placed in a JSON _key_ position is not masked, because keys are structure and the pass never rewrites structure.
+**Known limitations:** masking applies to values only. A secret placed in a JSON _key_ position is not masked, because keys are structure and the pass never rewrites structure.
+
+A password that looks like a plain word, such as `password: hunter2hunter`, can be left as written when no login target such as `user@host` is within three lines of it, because nothing tells it apart from ordinary text. A password that contains `***` or `...` can be left as written too, because a value shown masked or cut short looks the same.
 {% endhint %}
 
 ### What leaves your machine
 
 Redacted records of all three kinds — recorded API calls, recorded session lines, and recorded git observations — are packed into compressed batches, by default when 10 MiB or 24 hours accumulate, and uploaded over HTTPS, authenticated by your device pairing token. Records read from session files leave on thresholds of their own — 1 MiB or five minutes, adjustable by the service handshake — and at once when a session ends or its process is gone and its file stopped growing.
+
+A session often sends the same image again with each later call. When the trajector service states that it can restore them, each image or document goes up in full at least once in each session — for a call recorded by the proxy, at least once in each project and UTC day — and a later copy goes up as the SHA-256 digest of its base64 content. The service puts each copy back in the data it delivers.
 
 Each batch carries a client-side idempotency key, so a retried upload can never be counted twice. Local records are deleted **only after** the service acknowledges the batch by echoing that key. Any other answer leaves your data in place for retry.
 

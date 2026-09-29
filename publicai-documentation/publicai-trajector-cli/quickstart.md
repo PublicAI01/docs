@@ -39,7 +39,7 @@ trajector enable --no-proxy   # session files + git observation only
 **Desktop Claude Code sessions cannot go through the proxy.** The desktop host sets its own API base URL and ignores the settings the CLI writes for a project, so no proxy can sit in front of it. Those sessions are still recorded from their session files, and from 0.3.1 a session file recorded live counts at the full rate — see Rewards for what "recorded live" means.
 {% endhint %}
 
-If you upgrade with `trajector upgrade` and the release changed the data agreement, recording pauses and the next `trajector enable` asks you to confirm the updated agreement once.
+If you upgrade with `trajector upgrade` and the release changed the data agreement, recording pauses and the next `trajector enable` asks you to confirm the updated agreement once. Upgrading to 0.3.5 is such a case: the agreement moves to version `2026-09-29`.
 
 After you accept, it:
 
@@ -82,16 +82,17 @@ trajector status
 
 ```
 Recording: on (1 project(s))
-trajector 0.3.3
+trajector 0.3.5
 
 Device
   Signed in.
+  Images and documents: uploaded.
 
 Project /path/to/your-project
   Contributing; recording is on for this project.
 
 Proxy
-  Running at 127.0.0.1:41100: version 0.3.3, up 4m12s.
+  Running at 127.0.0.1:41100: version 0.3.5, up 4m12s.
   Recorded since it started: 3 (SSE degraded: 0, dropped: 0).
 
 Spool
@@ -101,7 +102,9 @@ Uploads
   Never uploaded.
 ```
 
-The first line is the verdict: `Recording: on (N project(s))` when something is being recorded, and `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)` or `Recording: off in this project` when nothing is. `status` exits `1` when it printed an error.
+The first line is the verdict: `Recording: on (N project(s))` when something is being recorded, and `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, `Recording: STOPPED on this device (routing table unreadable)` or `Recording: off in this project` when nothing is. `status` exits `1` when it printed an error.
+
+`Images and documents: uploaded.` under Device says that the content of images and documents goes up with the rest: redaction cannot see what a screenshot or a PDF shows. Data and privacy says how to upload them as placeholders instead.
 
 Uploads happen on their own once enough has accumulated. To send what is there right now:
 
@@ -110,7 +113,7 @@ trajector upload --force
 ```
 
 ```
-Uploaded 1 batch(es), 3 rawcall(s).
+Uploaded 1 batch(es), 3 record(s).
 ```
 
 Records are deleted from the spool as soon as the service acknowledges the batch by id. A `2xx` that names no batch id proves nothing was stored, so the data is kept and retried.

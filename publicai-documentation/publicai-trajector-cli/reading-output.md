@@ -14,7 +14,7 @@ Both commands read from one scale, so a line means the same thing wherever it ap
 Recording: on (3 project(s))
 ```
 
-The other three readings are `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, and `Recording: off in this project`.
+The other four readings are `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, `Recording: STOPPED on this device (routing table unreadable)`, and `Recording: off in this project`.
 
 **Every marked line opens with its severity.**
 
@@ -46,23 +46,24 @@ The `fix:` line carries a command and nothing else. Where nothing trajector runs
 
 ```
 Recording: on (3 project(s))
-trajector 0.3.3
+trajector 0.3.5
 
 Device
   Signed in.
+  Images and documents: uploaded.
 
 Project /path/to/project
   Contributing; recording is on for this project.
 
 Proxy
-  Running at 127.0.0.1:41100: version 0.3.3, up 4m12s.
+  Running at 127.0.0.1:41100: version 0.3.5, up 4m12s.
   Recorded since it started: 3 (SSE degraded: 0, dropped: 0).
 
 Spool
   184.2 KiB of 2.0 GiB used.
 
 Uploads
-  Last upload: 12 rawcall(s) (612.4 KiB) at 2026-08-10T08:41:02Z.
+  Last upload: 12 record(s) (612.4 KiB) at 2026-08-10T08:41:02Z.
 ```
 
 #### Device
@@ -73,6 +74,24 @@ Uploads
 | "Not signed in. Run `trajector login`…"              | No device token                                                        |
 | "warning: the device token store could not be read." | The keyring or the fallback files are unreadable — run `doctor`        |
 | "Recording is paused everywhere: …"                  | Something suspended recording on every project, and the line says what |
+| "Images and documents: uploaded."                    | Their content goes up with the rest of the record — the default        |
+| "Images and documents: placeholders only; …"         | `upload_images_and_documents` is `false` in `config.json`: each goes up as a placeholder |
+| "error: Images and documents: placeholders only, because config.json cannot be read." | `config.json` exists but does not read; see below |
+
+The Device block always says what goes up of images and documents, because redaction cannot see what they show — see Data and privacy. With their upload turned off, the line also names the one copy the setting does not cover:
+
+```
+  Images and documents: placeholders only; their content is not uploaded (upload_images_and_documents is false in config.json). Notebook images that older Claude Code versions keep are uploaded as they are; see PRIVACY.md.
+```
+
+A `config.json` that cannot be read stops every other command, but not `status`. It names the file and the failure, and says what that does to a running proxy:
+
+```
+  error: Images and documents: placeholders only, because config.json cannot be read.
+    why:  reading /home/you/.config/trajector/config.json: unexpected end of JSON input; images and documents go up as placeholders until it reads.
+```
+
+There is no `fix:` line: repair or remove the file, and the next `status` shows the setting it holds.
 
 #### Project
 
@@ -138,11 +157,13 @@ Held segments sit outside the quota, nothing uploads them, reading went on from 
 
 #### Uploads
 
-Last successful upload, last error if there was one, and a warning if any batch is quarantined:
+Last successful upload, last error if there was one, and an error if any batch is quarantined:
 
 ```
-  warning: 3 rawcall(s) in 1 rejected batch(es) are quarantined and will not be retried automatically.
-  Run `trajector doctor` to inspect them, then requeue or discard them.
+  error: 3 record(s) in 1 rejected batch(es) are quarantined and will not be retried automatically
+    why:  the service refused them or this machine could not read them, and neither is retried on its own
+    fix:  trajector doctor requeue <batch-id>
+      Name --all in place of a batch id to take every quarantined batch at once.
 ```
 
 A standing refusal from the service is stated here too, with when uploads stopped:
@@ -156,14 +177,20 @@ The first retries itself and names when the next attempt is due; the second wait
 
 #### Service
 
-This block only appears when the service said something on the last upload — a required version, a message, or a notice.
+This block only appears while the service has a notice standing for this device:
+
+```
+  Notice from the service: …
+```
+
+When the service withdraws a notice, it disappears from `status` and `doctor` after the next upload the service acknowledges. Before 0.3.5 a withdrawn notice stayed on screen.
 
 ### `doctor`, line by line
 
 ```
-trajector 0.3.3 doctor
+trajector 0.3.5 doctor
 
-  ok: proxy running at 127.0.0.1:41100 (version 0.3.3, up 4m12s)
+  ok: proxy running at 127.0.0.1:41100 (version 0.3.5, up 4m12s)
   ok: injection and routing agree for this project
   ok: every session file of this project is registered (4 session(s))
   ok: capture spool writable (184.2 KiB of 2.0 GiB used)

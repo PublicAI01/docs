@@ -88,7 +88,7 @@ This project now contributes data. Run `trajector disable` here to stop.
 ```
 
 {% hint style="info" %}
-If the agreement text changes, recording pauses and `enable` asks you to reconfirm. It will say `The data agreement changed since you last accepted it.` before showing the new text.
+If the agreement text changes, recording pauses and `enable` asks you to reconfirm. It will say `The data agreement changed since you last accepted it.` before showing the new text. Upgrading to 0.3.5 is such a change: the agreement moves to version `2026-09-29`.
 {% endhint %}
 
 | Flag           | Effect                                                                                                                    |
@@ -137,7 +137,7 @@ Stops contributing from the current project, immediately.
 ```
 Removed injection from /path/to/project/.claude/settings.local.json
 Project token revoked; recording for this project is off.
-Deleted 4 unuploaded rawcall(s) for this project (3 from the spool, 1 from rejected batches).
+Deleted 4 unuploaded record(s) for this project (3 from the spool, 1 from rejected batches).
 This project no longer contributes data.
 ```
 
@@ -167,7 +167,7 @@ It opens with one verdict line, before the version and the blocks, so the answer
 Recording: on (3 project(s))
 ```
 
-The other three readings are `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, and `Recording: off in this project`. `status` exits `1` when it printed anything at error severity, so a script can tell a recording device from a stopped one without reading the text.
+The other four readings are `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, `Recording: STOPPED on this device (routing table unreadable)`, and `Recording: off in this project`. `status` exits `1` when it printed anything at error severity, so a script can tell a recording device from a stopped one without reading the text.
 
 Per enabled project it also reports the second source and what is waiting to upload:
 
@@ -180,6 +180,15 @@ Per enabled project it also reports the second source and what is waiting to upl
 ```
 
 `Session files: none registered yet.` appears until a hook has reported one. The reader's findings about the files' shape are counts and field names only — never a path or a session id — and a count of assistant lines that carried no reasoning points at `showThinkingSummaries` when that setting is off.
+
+The Device block states what goes up of images and documents, whose content redaction cannot see — one of these, the second when `upload_images_and_documents` is `false` in `config.json`:
+
+```
+  Images and documents: uploaded.
+  Images and documents: placeholders only; their content is not uploaded (upload_images_and_documents is false in config.json). Notebook images that older Claude Code versions keep are uploaded as they are; see PRIVACY.md.
+```
+
+`status` also runs when `config.json` cannot be read, which stops every other command except `doctor bundle`. It then prints `error: Images and documents: placeholders only, because config.json cannot be read.` with the failure on the `why:` line, and exits `1`.
 
 The Spool block adds a line when this build met a segment shape it cannot redact and kept the segment back:
 
@@ -215,7 +224,7 @@ Diagnoses and repairs. Each line is prefixed by what happened:
 Exit is `0` when nothing is left over, `1` when at least one `error:` remains.
 
 ```
-trajector 0.3.3 doctor
+trajector 0.3.5 doctor
 
   ok: proxy not running; it starts on demand with the next session
   ok: this project is not enabled; nothing to reconcile
@@ -259,7 +268,7 @@ What it checks: the device token store, whether recording is paused, the proxy, 
 
 #### `trajector doctor bundle`
 
-Writes a diagnostic archive into the current directory.
+Writes a diagnostic archive into the current directory. It runs even when `config.json` cannot be read, and records why together with whether images and documents go up as placeholders.
 
 ```
 Wrote /path/to/project/trajector-doctor-20260810-094902.tar.gz
@@ -277,7 +286,7 @@ A quarantined batch is one the service refused, or one whose records this machin
 
 #### `trajector doctor discard <batch-id>|--all [--yes]`
 
-Deletes a quarantined batch and its rawcalls from this machine for good. Use it to give up on a batch that will never upload. `--yes` skips the confirmation prompt.
+Deletes a quarantined batch and its records from this machine for good. Use it to give up on a batch that will never upload. `--yes` skips the confirmation prompt.
 
 ### `trajector upload [--force]`
 
@@ -285,11 +294,11 @@ Uploads what is waiting now.
 
 | Situation                    | Output                                                               | Exit |
 | ---------------------------- | -------------------------------------------------------------------- | ---- |
-| Uploaded                     | `Uploaded 1 batch(es), 3 rawcall(s).`                                | `0`  |
+| Uploaded                     | `Uploaded 1 batch(es), 3 record(s).`                                 | `0`  |
 | Spool empty                  | `Nothing to upload.`                                                 | `0`  |
 | Below thresholds             | `Below the upload thresholds; use --force to upload anyway.`         | `0`  |
 | Not signed in                | "Not signed in; run `trajector login` first. Captured data is kept." | `0`  |
-| Service wants a newer client | "Uploads are paused: the service requires trajector X or newer…"     | `0`  |
+| Service wants a newer client | "Uploads are paused: the service requires client version X or newer; this build is Y." | `0`  |
 | The service refused this client access | "Uploads are paused since … until …: the service refused this client access. Captured data is kept." | `0`  |
 | The service refused this device's credential | "Uploads are paused since …: the service refused this device's credential. Captured data is kept." | `0`  |
 | A batch was rejected         | The rejection is printed loudly, the batch is quarantined            | `1`  |
@@ -301,8 +310,8 @@ A refused client access is also retried on its own — after a minute, then doub
 Unreadable records are set aside rather than blocking the rest:
 
 ```
-Uploaded 1 batch(es), 1 rawcall(s).
-Set aside 1 unreadable rawcall(s); they were never sent. Run `trajector doctor` to inspect them.
+Uploaded 1 batch(es), 1 record(s).
+Set aside 1 unreadable record(s); they were never sent. Run `trajector doctor` to inspect them.
 ```
 
 ### `trajector forget [<session-id>]`
@@ -323,13 +332,12 @@ It acts on the session, not on the working directory, so it runs from anywhere. 
 Installs the newest published release over this one. Four outcomes, all exit `0`:
 
 ```
-Downloading trajector 0.3.3...
-Upgraded trajector 0.3.2 -> 0.3.3.
+Upgraded trajector 0.3.4 -> 0.3.5.
 A proxy from the previous build may still be running; the next session replaces it.
 ```
 
 ```
-trajector 0.3.3 is already the newest release.
+trajector 0.3.5 is already the newest release.
 ```
 
 ```
@@ -349,7 +357,7 @@ Anything that fails — network, checksum mismatch, no matching asset, a path th
 ### `trajector version`
 
 ```
-trajector 0.3.3
+trajector 0.3.5
 ```
 
 A build that was not made from a published tag reports `dev`.

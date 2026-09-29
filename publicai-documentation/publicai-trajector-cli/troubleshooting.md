@@ -12,7 +12,7 @@ It checks everything below, repairs what it can on its own, and tells you what i
 
 ### Nothing is being recorded
 
-Start with the first line of `trajector status`. It is the verdict — `Recording: on (3 project(s))`, `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, or `Recording: off in this project` — and it says which of the steps below applies. `status` exits `1` when it printed an error, so a script can ask the same question.
+Start with the first line of `trajector status`. It is the verdict — `Recording: on (3 project(s))`, `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, `Recording: STOPPED on this device (routing table unreadable)`, or `Recording: off in this project` — and it says which of the steps below applies. `status` exits `1` when it printed an error, so a script can ask the same question.
 
 Then work through these in order:
 
@@ -189,8 +189,10 @@ Start a new session, or wait for the idle exit. If it persists, `trajector docto
 ### Batches are quarantined
 
 ```
-warning: 3 rawcall(s) in 1 rejected batch(es) are quarantined and will not be
-retried automatically.
+error: 3 record(s) in 1 rejected batch(es) are quarantined and will not be retried automatically
+  why:  the service refused them or this machine could not read them, and neither is retried on its own
+  fix:  trajector doctor requeue <batch-id>
+    Name --all in place of a batch id to take every quarantined batch at once.
 ```
 
 A quarantined batch is one the service refused, or one this machine could no longer read back. It is moved out of the spool so a single bad batch cannot block every upload behind it. Nothing retries it automatically — you decide:
@@ -214,7 +216,7 @@ A full spool stops new recording rather than evicting what is already there. `tr
 ### Uploads say the service wants a newer client
 
 ```
-Uploads are paused: the service requires trajector 0.3.3 or newer (this is 0.3.2).
+Uploads are paused: the service requires client version 0.3.5 or newer; this build is 0.3.4.
 ```
 
 Your captured data is kept. `trajector upgrade`, then upload again.
@@ -282,6 +284,15 @@ They cannot see each other's loopback in a useful way. Run both inside WSL, or b
 
 Allow loopback access. The proxy only ever binds `127.0.0.1` and is never reachable from another machine.
 
+### `config.json` cannot be read
+
+```
+error: Images and documents: placeholders only, because config.json cannot be read.
+  why:  reading /home/you/.config/trajector/config.json: unexpected end of JSON input; images and documents go up as placeholders until it reads.
+```
+
+Your `config.json` exists but does not read — cut short, not JSON, or not readable by your user. Every command except `trajector status` and `trajector doctor bundle` stops on it and names the file, rather than guess at settings you may have changed. A proxy that is already running keeps the settings it started with, except that it reads the file again for every batch: until the file reads, it uploads images and documents as placeholders, and `proxy.log` says so. Fix the file — or remove it to go back to every default, which uploads images and documents — and the next command runs as before.
+
 ### The keyring is unavailable
 
 On a headless or minimal system there may be no Secret Service. Fall back to owner-only files:
@@ -302,4 +313,4 @@ Trajector leaves it alone and warns you, rather than writing through a symlink i
 trajector doctor bundle
 ```
 
-This writes an archive into the current directory containing diagnostics only: identities, counters, timestamps. No captured records, no credentials, no clear-text tokens. **Nothing is sent anywhere** — inspect it yourself, then attach it to your report.
+This writes an archive into the current directory containing diagnostics only: identities, counters, timestamps. No captured records, no credentials, no clear-text tokens. It is written even when `config.json` cannot be read. **Nothing is sent anywhere** — inspect it yourself, then attach it to your report.

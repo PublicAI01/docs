@@ -42,24 +42,37 @@ Optional. It does not exist until you create it.
 ```json
 {
   "platform_url": "https://api.trajector.example",
-  "releases_url": "https://api.github.com/repos/PublicAI01/trajector-cli/releases"
+  "releases_url": "https://api.github.com/repos/PublicAI01/trajector-cli/releases",
+  "upload_images_and_documents": false
 }
 ```
 
-| Key            | Meaning                                           |
-| -------------- | ------------------------------------------------- |
-| `platform_url` | Where captured data is uploaded                   |
-| `releases_url` | Where `trajector upgrade` looks for a newer build |
+| Key                           | Meaning                                                                                                   |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `platform_url`                | Where captured data is uploaded                                                                           |
+| `releases_url`                | Where `trajector upgrade` looks for a newer build                                                         |
+| `upload_images_and_documents` | `false` uploads each image and document as a placeholder instead of its content. Absent means `true`: they are uploaded |
+
+`upload_images_and_documents` exists because redaction cannot see what an image or a PDF shows. The next upload uses it, also for records captured before you changed it, and the proxy does not need a restart. `trajector status` shows which of the two is in effect. What a placeholder holds and the one copy the setting does not cover are in Data and privacy.
 
 {% hint style="danger" %}
-**Neither of these can be set from an environment variable, by design.**
+**None of these can be set from an environment variable, by design.**
 
-Settings a repository ships reach a session hook's environment. If the upload destination or the source of the next binary could be chosen that way, a cloned repository could redirect your credentialed traffic or hand you a binary of its choosing. Both answers come from this file, in your own config directory, where nothing inside a repository can write.
+Settings a repository ships reach a session hook's environment. If the upload destination, the source of the next binary, or what is uploaded could be chosen that way, a cloned repository could redirect your credentialed traffic, hand you a binary of its choosing, or turn image upload back on. Every answer comes from this file, in your own config directory, where nothing inside a repository can write.
 
 `install.sh` is the deliberate exception: `TRAJECTOR_API_BASE` and `TRAJECTOR_DL_BASE` do work there, because that script is only ever run by a person at a shell, never from a hook.
 {% endhint %}
 
-A malformed `config.json` is a loud failure, not a silent fallback. If trajector cannot understand the file it refuses to run rather than quietly sending data somewhere you did not intend.
+A `config.json` that exists but cannot be read — cut short, not JSON, not readable by your user — is a loud failure, not a silent fallback. Every command stops on it rather than quietly sending data somewhere you did not intend, with two exceptions: `trajector status` and `trajector doctor bundle` still run, name the file and the failure, and say that images and documents go up as placeholders until the file reads again. A proxy that is already running when the file breaks reads it again for every batch: until it reads, images and documents go up as placeholders, and `proxy.log` says so. A proxy does not start on such a file.
+
+```
+Device
+  error: Images and documents: placeholders only, because config.json cannot be read.
+    why:  reading /home/you/.config/trajector/config.json: unexpected end of JSON input; images and documents go up as placeholders until it reads.
+  Signed in.
+```
+
+Placeholders are the side a wrong guess costs least on: an upload cannot be taken back, a placeholder only withholds content. `status` exits `1` while the file cannot be read.
 
 ### Environment variables
 
