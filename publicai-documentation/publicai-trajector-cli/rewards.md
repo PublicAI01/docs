@@ -118,6 +118,7 @@ Common reasons a session is held:
 
 * **Daily volume caps.** There is a per-account and a per-device cap on tokens credited per UTC day. Going over the cap does not destroy the sessions — they queue for review, because legitimately high-volume contributors exist.
 * **Thin sessions.** No real prompt from you, no tool call, and no file change. There is nothing to learn from a session where nothing happened.
+* **Sessions that do not change code.** Trajector pays for coding sessions only. A session that does not change code is held and is not paid.
 * **Quality gates.** The trajectory didn't meet the collection thresholds (for example, too few assistant turns, or a tool-error ratio high enough that the session is mostly failure noise).
 * **Fragments.** Content that is already fully contained in another session you uploaded.
 * **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. You can delete a held session yourself from **My data** at any time before you claim it.
