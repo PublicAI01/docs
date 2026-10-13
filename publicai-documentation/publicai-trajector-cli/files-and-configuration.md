@@ -12,7 +12,7 @@ Everything lives under per-user directories your platform dictates. Nothing is w
 | macOS    | `~/Library/Application Support/trajector` | same                       | same                       |
 | Windows  | `%APPDATA%\trajector`                     | `%LOCALAPPDATA%\trajector` | `%LOCALAPPDATA%\trajector` |
 
-`XDG_CONFIG_HOME`, `XDG_DATA_HOME`, and `XDG_STATE_HOME` override these on **every** platform, which is what makes a fully relocated sandbox possible.
+`XDG_CONFIG_HOME`, `XDG_DATA_HOME`, and `XDG_STATE_HOME`, set together, override these on **every** platform, which is what makes a fully relocated sandbox possible. On Linux each also works on its own.
 
 #### What is in them
 
@@ -86,7 +86,7 @@ Placeholders are the side a wrong guess costs least on: an upload cannot be take
 | ------------------------------------------------------ | -------------------------------------------------------------------- |
 | `TRAJECTOR_TOKEN_STORE=file`                           | Store the device token in owner-only files instead of the OS keyring |
 | `TRAJECTOR_PROXY_ADDR`                                 | Override the proxy address; for tests and unusual setups             |
-| `XDG_CONFIG_HOME` / `XDG_DATA_HOME` / `XDG_STATE_HOME` | Relocate trajector's directories, on every platform                  |
+| `XDG_CONFIG_HOME` / `XDG_DATA_HOME` / `XDG_STATE_HOME` | Relocate trajector's directories: all three together on every platform, each on its own on Linux |
 
 Variables read from the surrounding Claude Code configuration, which trajector reacts to but never sets for you:
 

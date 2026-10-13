@@ -64,7 +64,7 @@ A third flag is orthogonal to the shape: `trajector enable --no-earlier` leaves 
 ```
 
 {% hint style="info" %}
-**Desktop Claude Code cannot go through the proxy.** The desktop host sets its own API base URL and ignores the project settings the CLI writes, so there is no proxy to route it through. Those sessions are still recorded from their session files, and from 0.3.1 a session file recorded live counts at the full rate — see Rewards.
+**Desktop Claude Code cannot go through the proxy.** The desktop host sets its own API base URL and ignores the project settings the CLI writes, so there is no proxy to route it through. Those sessions are still recorded from their session files, and a session file recorded live counts at the full rate — see Rewards.
 {% endhint %}
 
 ### Verifying a release yourself
@@ -80,7 +80,7 @@ The attestation proves the binary was produced by that workflow from that source
 
 ### Updating
 
-From 0.4.0, trajector keeps itself up to date. The session hooks ask GitHub for the list of releases at most once a day — at most once an hour while the trajector service answers that this version is too old — and when a newer one exists, trajector downloads it, verifies it against the release's checksum file, and installs it in the background. The request carries the trajector version and nothing else; Data and privacy says exactly what it sends. The next trajector command you run says that it happened:
+Trajector keeps itself up to date. The session hooks ask GitHub for the list of releases at most once a day — at most once an hour while the trajector service answers that this version is too old — and when a newer one exists, trajector downloads it, verifies it against the release's checksum file, and installs it in the background. The request carries the trajector version and nothing else; Data and privacy says exactly what it sends. The next trajector command you run says that it happened:
 
 ```
 trajector upgraded itself to <version> in the background.
@@ -104,7 +104,7 @@ curl -fsSL https://raw.githubusercontent.com/PublicAI01/trajector-cli/main/insta
 
 If you installed into another directory, set `TRAJECTOR_INSTALL_DIR` to it again; otherwise you end up with a second copy in `~/.local/bin`. If Homebrew owns the installation, run `brew upgrade trajector` instead. `trajector version` then prints the version you have.
 
-`upgrade` moves to the newest published release — including pre-releases, which is what a beta wants. The archive's checksum is verified **before** anything is replaced: a download that fails verification leaves the binary you have exactly as it was. From 0.4.0 the new release is also run once, and made to start a proxy of its own, before it is kept; if either fails, the previous binary is put back and the command says why and exits `1`.
+`upgrade` moves to the newest published release — including pre-releases, which is what a beta wants. The archive's checksum is verified **before** anything is replaced: a download that fails verification leaves the binary you have exactly as it was. The new release is also run once, and made to start a proxy of its own, before it is kept; if either fails, the previous binary is put back and the command says why and exits `1`.
 
 If a package manager owns the installation, `upgrade` says so and hands the job back to that manager rather than overwriting its files.
 
@@ -122,4 +122,6 @@ trajector uninstall
 Run `trajector uninstall` **before** deleting the binary. Deleting the binary alone leaves the settings injections behind in every project you enabled, and Claude Code will keep trying to reach a proxy that no longer exists.
 {% endhint %}
 
-`uninstall` removes every injection, revokes the device token, and stops the proxy. Add `--delete-data` to also delete the local spool and any captured data still waiting on your machine. It ends by telling you the path of the binary to delete.
+`uninstall` removes every injection and the project-discovery hint, and stops the proxy. It then asks whether to delete local data — captured records still waiting on your machine, configuration, and the device token; `--delete-data` answers yes without asking. It ends by telling you the path of the binary to delete.
+
+`uninstall` does not revoke the device token with the service. To do that, run `trajector logout` first.

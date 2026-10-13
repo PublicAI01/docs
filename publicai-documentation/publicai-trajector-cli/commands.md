@@ -58,9 +58,9 @@ Pairing is per device. You do not log in per project.
 Signs the device out. The token is revoked with the service and removed locally.
 
 ```
-Signed out. Forwarding for enabled projects is unaffected; recording is
-paused everywhere until you run `trajector login` again, and kept data
+Signed out. Forwarding for enabled projects is unaffected, and kept data
 uploads once you are back.
+Recording is paused everywhere: this device is signed out; run `trajector login`.
 ```
 
 Nothing is deleted. Enabled projects stay enabled, their traffic keeps flowing, and whatever is already spooled is uploaded once you sign back in. If the service cannot be reached the token is still removed locally, and a warning tells you to revoke it from your account page.
@@ -76,15 +76,19 @@ On acceptance:
 1. If the device is not paired yet, pairing runs first.
 2. If the project already has a base URL configured, that relay is detected and named, and traffic keeps flowing through it. Records are marked third-party origin.
 3. A project token is minted and the grant recorded.
-4. The base URL and session hooks are injected into the project's Claude Code settings; the file path is printed. With `--no-proxy`, the session hooks are installed and no base URL is injected.
-5. The injected settings and diagnostic bundles are added to `.gitignore`.
-6. A self-check runs against the live proxy, end to end.
+4. It offers to turn on Claude Code's `showThinkingSummaries` for this project only, and asks first. Saying no changes nothing else; `trajector disable` puts the setting back.
+5. The base URL and session hooks are injected into the project's Claude Code settings; the file path is printed. With `--no-proxy`, the session hooks are installed and no base URL is injected.
+6. The injected settings and diagnostic bundles are added to `.gitignore`.
+7. A self-check runs against the live proxy, end to end.
 
 ```
 Injected /path/to/project/.claude/settings.local.json (base URL and session hooks)
-Added .claude/settings.local.json to .gitignore
+Added .claude/settings.local.json*, trajector-doctor-*.tar.gz, trajector-doctor-*/ to .gitignore
 Self-check passed: routing and recording verified end to end.
+Remote Control: inside this project, /remote-control will not be available. …
+Calls the local proxy did not witness are rewarded at a lower rate than witnessed ones. …
 This project now contributes data. Run `trajector disable` here to stop.
+Recording: on (1 project(s))
 ```
 
 {% hint style="info" %}
@@ -169,14 +173,25 @@ Recording: on (3 project(s))
 
 The other four readings are `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, `Recording: STOPPED on this device (routing table unreadable)`, and `Recording: off in this project`. `status` exits `1` when it printed anything at error severity, so a script can tell a recording device from a stopped one without reading the text.
 
-Per enabled project it also reports the second source and what is waiting to upload:
+Per enabled project it also reports the second source:
 
 ```
   Session files: 4 session(s) registered; last read 2026-09-20T09:12:41Z; 12.4 KiB not read yet.
-  Sessions started under another spelling of this project's path, or under a directory name Claude Code
-  was told to use instead, are stored under names this device does not compute and are not collected.
+  Sessions started under another spelling of this project's path, or under a directory name Claude Code was told to use instead, are stored under names this device does not compute and are not collected.
+```
+
+An injection made before one of the session hooks existed is stated as a problem, with `trajector doctor` as the fix:
+
+```
+  error: a session hook is missing from this project's injected settings
+    why:  /path/to/project/.claude/settings.local.json was injected before this hook existed, so part of this project is not reported
+    fix:  trajector doctor
+```
+
+The Uploads block counts what is waiting to upload, by kind:
+
+```
   Records waiting to upload: 3 rawcall(s), 12 segment(s), 2 session snapshot(s), 1 git snapshot(s); the oldest is from 2026-09-20T08:41:02Z.
-  A session hook is missing from /path/to/project/.claude/settings.local.json; run `trajector doctor` to add it.
 ```
 
 `Session files: none registered yet.` appears until a hook has reported one. The reader's findings about the files' shape are counts and field names only — never a path or a session id — and a count of assistant lines that carried no reasoning points at `showThinkingSummaries` when that setting is off.
@@ -229,7 +244,7 @@ Diagnoses and repairs. Each line is prefixed by what happened:
 | `ok:`      | Checked, nothing wrong                                 |
 | `note:`    | A fact that asks nothing of you                        |
 
-`doctor` marks every line it prints; `status` marks only what is wrong. `error:` was `problem:` before 0.3.2, and `WARNING:` is now `warning:`.
+`doctor` marks every line it prints; `status` marks only what is wrong.
 
 Exit is `0` when nothing is left over, `1` when at least one `error:` remains.
 
@@ -246,22 +261,26 @@ trajector 0.4.0 doctor
 Everything checks out.
 ```
 
-`doctor` additionally walks the project's session files and reports sessions that were written without a hook of trajector's noticing them, and adds a session hook missing from an injection made before that hook existed:
+`doctor` additionally adds a session hook missing from an injection made before that hook existed, and walks the project's session files:
 
 ```
+  fixed: completed the session hooks in /path/to/project/.claude/settings.local.json (1 added)
   ok: every session file of this project is registered (4 session(s))
-  fixed: rewrote the injection in /path/to/project/.claude/settings.local.json (token and session hooks restored)
-  note: 3 session(s) of this project predate its grant, so no hook of trajector's reported them
-      Run `trajector enable` in this project (with --no-proxy if you use it) to register them.
+```
+
+Sessions written after the grant that no hook of trajector's reported are a warning:
+
+```
   warning: could not determine why the hooks did not report 1 session(s) of this project
 ```
 
-Neither of those two is a problem `doctor` exits `1` over; what it counts is a repair it could not make. See Troubleshooting for the causes listed under the warning.
+That is not a problem `doctor` exits `1` over, and neither is the `note:` it adds for sessions that predate the grant; what it counts is a repair it could not make. See Troubleshooting for the causes listed under the warning.
 
 These are the repairs it reports on the session files and the pause:
 
 ```
-  fixed: recording resumed: this build read the session files again and found nothing it cannot redact
+  fixed: recording resumed: this build read the session files again and every line it read ended in a newline
+  fixed: recording resumed after upgrade: it was paused by <previous version>, and this build is <version>
   fixed: asked for 2 never-read session file(s) of this project to be read
   fixed: registered 1 session file(s) of this project that no hook reported, and asked for them to be read
 ```
@@ -334,7 +353,7 @@ Uploads what is waiting now.
 | Uploaded                     | `Uploaded 1 batch(es), 3 record(s).`                                 | `0`  |
 | Spool empty                  | `Nothing to upload.`                                                 | `0`  |
 | Below thresholds             | `Below the upload thresholds; use --force to upload anyway.`         | `0`  |
-| Not signed in                | "Not signed in; run `trajector login` first. Captured data is kept." | `0`  |
+| Not signed in                | "Uploads are paused: this device is signed out."                     | `0`  |
 | Service wants a newer client | "Uploads are paused: the service requires client version X or newer; this build is Y." | `0`  |
 | The service refused this client access | "Uploads are paused since … until …: the service refused this client access. Captured data is kept." | `0`  |
 | The service refused this device's credential | "Uploads are paused since …: the service refused this device's credential. Captured data is kept." | `0`  |
@@ -356,9 +375,7 @@ Set aside 1 unreadable record(s); they were never sent. Run `trajector doctor` t
 Deletes one session's not-yet-uploaded records from this machine — from both spool slots and from any quarantined batch — and reports one total. With no argument it acts on the current session, so it can be run from inside a Claude Code session; outside one, pass the session id.
 
 ```
-Forgetting session 0f0c1f6e-...: deleting its records that have not been uploaded yet from this machine.
-Uploaded data is deleted from the Dashboard instead. Recording of this session continues; only what was
-collected so far is gone.
+Forgetting session 0f0c1f6e-...: deleting its records that have not been uploaded yet from this machine. Uploaded data is deleted from the Dashboard instead. Recording of this session continues; only what was collected so far is gone.
 Deleted 7 record(s) of session 0f0c1f6e-....
 ```
 
@@ -389,7 +406,7 @@ This build reports version dev, which is not a published release.
 Nothing was changed.
 ```
 
-From 0.4.0, when trajector also checks on its own — the binary in place is a published release, `auto_upgrade` is not `false`, and the data agreement you accepted describes the check — the first two end with:
+When trajector also checks on its own — the binary in place is a published release, `auto_upgrade` is not `false`, and the data agreement you accepted describes the check — the first two end with:
 
 ```
 trajector also checks for a newer release once a day on its own; set "auto_upgrade": false in config.json to stop that.

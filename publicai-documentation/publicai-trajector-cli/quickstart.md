@@ -36,7 +36,7 @@ trajector enable --no-proxy   # session files + git observation only
 * **`trajector enable --no-proxy`** installs the session hooks and injects no base URL. The project records from its session files and git only, and `/remote-control` stays available inside the project.
 
 {% hint style="info" %}
-**Desktop Claude Code sessions cannot go through the proxy.** The desktop host sets its own API base URL and ignores the settings the CLI writes for a project, so no proxy can sit in front of it. Those sessions are still recorded from their session files, and from 0.3.1 a session file recorded live counts at the full rate — see Rewards for what "recorded live" means.
+**Desktop Claude Code sessions cannot go through the proxy.** The desktop host sets its own API base URL and ignores the settings the CLI writes for a project, so no proxy can sit in front of it. Those sessions are still recorded from their session files, and a session file recorded live counts at the full rate — see Rewards for what "recorded live" means.
 {% endhint %}
 
 If an upgrade — by `trajector upgrade` or the automatic one — brings a changed data agreement, recording pauses and the next `trajector enable` asks you to confirm the updated agreement once; run it with `--no-proxy` and `--no-earlier` if the project uses them. Upgrading to 0.4.0 is such a case: the agreement moves to version `2026-10-13`, and accepting it is also what turns on the automatic upgrade check.
@@ -44,19 +44,23 @@ If an upgrade — by `trajector upgrade` or the automatic one — brings a chang
 After you accept, it:
 
 * mints a token for this project and records the grant;
+* offers to turn on Claude Code's `showThinkingSummaries` for this project, and asks first;
 * injects the base URL and session hooks into this project's Claude Code settings, and prints the path it wrote;
 * adds the injected settings and diagnostic bundles to `.gitignore`, so they are never committed;
 * runs an end-to-end self-check against the live proxy.
 
 ```
 Injected /path/to/your-project/.claude/settings.local.json (base URL and session hooks)
-Added .claude/settings.local.json to .gitignore
+Added .claude/settings.local.json*, trajector-doctor-*.tar.gz, trajector-doctor-*/ to .gitignore
 Self-check passed: routing and recording verified end to end.
+Remote Control: inside this project, /remote-control will not be available. …
+Calls the local proxy did not witness are rewarded at a lower rate than witnessed ones. …
 This project now contributes data. Run `trajector disable` here to stop.
+Recording: on (1 project(s))
 ```
 
 {% hint style="info" %}
-**If the project already uses a relay**, `enable` detects it and says so before asking anything:
+**If the project already uses a relay**, `enable` detects it and says so before it changes anything:
 
 ```
 Detected an existing base URL (shell environment): https://your-relay.example
@@ -91,6 +95,11 @@ Device
 
 Project /path/to/your-project
   Contributing; recording is on for this project.
+  Remote Control: inside this project, /remote-control will not be available. …
+  Calls the local proxy did not witness are rewarded at a lower rate than witnessed ones. …
+  Judged from configuration readable on this machine, Claude Code will load trajector's hooks in this project
+  Session files: 1 session(s) registered; last read 2026-10-13T09:01:55Z; 0 B not read yet.
+  Sessions started under another spelling of this project's path, or under a directory name Claude Code was told to use instead, are stored under names this device does not compute and are not collected.
 
 Proxy
   Running at 127.0.0.1:41100: version 0.4.0, up 4m12s.
@@ -101,6 +110,7 @@ Spool
 
 Uploads
   Never uploaded.
+  Records waiting to upload: 3 rawcall(s), 12 segment(s); the oldest is from 2026-10-13T08:58:40Z.
 ```
 
 The first line is the verdict: `Recording: on (N project(s))` when something is being recorded, and `Recording: PAUSED on this device`, `Recording: STOPPED on this device (spool full)`, `Recording: STOPPED on this device (routing table unreadable)` or `Recording: off in this project` when nothing is. `status` exits `1` when it printed an error.
@@ -126,4 +136,4 @@ Records are deleted from the spool as soon as the service acknowledges the batch
 | This project                       | `trajector disable`         | Removes the injection, revokes the project token, deletes this project's unuploaded data |
 | This project and its uploaded data | `trajector disable --purge` | The above, plus a deletion request for uploaded data not yet delivered                   |
 | Recording everywhere               | `trajector logout`          | Recording pauses on every project; forwarding is unaffected                              |
-| Everything                         | `trajector uninstall`       | Removes every injection and the device token; `--delete-data` also deletes local data    |
+| Everything                         | `trajector uninstall`       | Removes every injection and stops the proxy; `--delete-data` also deletes local data and the device token |

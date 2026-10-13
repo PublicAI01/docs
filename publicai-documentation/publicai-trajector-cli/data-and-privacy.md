@@ -100,7 +100,7 @@ You can stop this. Set `"upload_images_and_documents": false` in `config.json` i
 
 #### Segments held on this machine
 
-A session file line whose shape this build's redaction does not cover no longer stops anything. That one segment is held on your machine, in a place nothing uploads from, and reading goes on from the next segment. Nothing unmasked leaves the machine, and nothing else is delayed by it.
+A session file line whose shape this build's redaction does not cover stops nothing. That one segment is held on your machine, in a place nothing uploads from, and reading goes on from the next segment. Nothing unmasked leaves the machine, and nothing else is delayed by it.
 
 `trajector status` and `trajector doctor` say how many segments are held, for how many sessions, and how much disk they take:
 
@@ -112,7 +112,7 @@ Held segments do not count against the spool quota. A later build that reads a h
 
 #### The device-wide pause
 
-Recording still pauses on the whole device when a read contradicts itself — an incomplete line, where nothing the read produced can be trusted. `trajector status` names the reason, `trajector upgrade` tells you the next step while the pause stands, and `trajector doctor` lifts the pause once **this** build has read the session files again and found nothing it cannot redact. It no longer takes a different build; a pause an older build set is still lifted after the upgrade, as before.
+Recording does pause on the whole device when a read contradicts itself — a line read without the newline that ends it, where nothing the read produced can be trusted. `trajector status` names the reason, `trajector upgrade` tells you the next step while the pause stands, and `trajector doctor` lifts the pause once it has read the session files again and every line it read was whole, or after an upgrade to a build other than the one that set it.
 
 A consent record that cannot be read or parsed also pauses recording device-wide, under a reason of its own. `status`, `doctor` and the diagnostic bundle name the file and the failure, and `trajector enable` (with `--no-proxy` and `--no-earlier` if you use them) is the way out: accepting the agreement writes a new record and recording resumes. A changed agreement pauses recording the same way until you accept it.
 
@@ -136,7 +136,7 @@ The upload destination can be changed only through `config.json` in your user co
 
 #### The upgrade check
 
-From 0.4.0 trajector also asks GitHub whether a newer release exists. The request is an HTTPS `GET` to `https://api.github.com/repos/PublicAI01/trajector-cli/releases`, unless `releases_url` in `config.json` names another `https` source. The only header it sets is `User-Agent: trajector/<version>`: it carries no token, no project data, and no identifier of this device. GitHub sees the network address the request comes from.
+Trajector also asks GitHub whether a newer release exists. The request is an HTTPS `GET` to `https://api.github.com/repos/PublicAI01/trajector-cli/releases`, unless `releases_url` in `config.json` names another `https` source. The only header it sets is `User-Agent: trajector/<version>`: it carries no token, no project data, and no identifier of this device. GitHub sees the network address the request comes from.
 
 * **How often.** The session hooks start the check at most once every 24 hours, or at most once an hour while the trajector service answers that this version is too old. `trajector upgrade` sends the same request when you run it.
 * **What it installs.** When a newer release exists, trajector downloads its archive and `trajector_checksums.txt` from that release, and installs it only if the checksum matches.

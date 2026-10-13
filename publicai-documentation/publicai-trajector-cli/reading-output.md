@@ -32,11 +32,12 @@ The other four readings are `Recording: PAUSED on this device`, `Recording: STOP
 
 ```
   error: Recording is paused everywhere
-    why:  the consent record at /home/you/.config/trajector/consent.json could not be read (unexpected end of JSON input)
+    why:  the consent record at /home/you/.config/trajector/consent.json could not be read (consent: unreadable consent record: unexpected end of JSON input)
     fix:  trajector enable
+      (with --no-proxy if you use it)
 ```
 
-The `fix:` line carries a command and nothing else. Where nothing trajector runs can end it — a port another process holds, for instance — there is no `fix:` line, and what to do is stated under the problem instead.
+The `fix:` line carries a command and nothing else; what the command line cannot carry follows under it. Where nothing trajector runs can end it — a port another process holds, for instance — there is no `fix:` line, and what to do is stated under the problem instead.
 
 **Colour and glyphs are for terminals only.** Colour is used only when a terminal is reading, and the glyphs `✓ ✗ !` only where the locale states UTF-8; elsewhere they are `+ x !`. `NO_COLOR`, `TERM=dumb`, and the global `--no-color` flag each turn the colour off and keep the glyphs. Output to a pipe or a file is plain ASCII with no escape sequences, so it can be read by a script or pasted into a report.
 
@@ -55,6 +56,12 @@ Device
 
 Project /path/to/project
   Contributing; recording is on for this project.
+  Remote Control: inside this project, /remote-control will not be available. …
+  Calls the local proxy did not witness are rewarded at a lower rate than witnessed ones. …
+  Judged from configuration readable on this machine, Claude Code will load trajector's hooks in this project
+  Session files: 4 session(s) registered; last read 2026-10-13T09:12:41Z; 0 B not read yet.
+  Sessions started under another spelling of this project's path, or under a directory name Claude Code was told to use instead, are stored under names this device does not compute and are not collected.
+  Optional settings: showThinkingSummaries on (set by trajector).
 
 Proxy
   Running at 127.0.0.1:41100: version 0.4.0, up 4m12s.
@@ -64,7 +71,8 @@ Spool
   184.2 KiB of 2.0 GiB used.
 
 Uploads
-  Last upload: 12 record(s) (612.4 KiB) at 2026-08-10T08:41:02Z.
+  Last upload: 12 record(s) (612.4 KiB) at 2026-10-13T08:41:02Z.
+  Records waiting to upload: none.
 ```
 
 #### Device
@@ -73,8 +81,8 @@ Uploads
 | ---------------------------------------------------- | ---------------------------------------------------------------------- |
 | "Signed in."                                         | The device is paired                                                   |
 | "Not signed in. Run `trajector login`…"              | No device token                                                        |
-| "warning: the device token store could not be read." | The keyring or the fallback files are unreadable — run `doctor`        |
-| "Recording is paused everywhere: …"                  | Something suspended recording on every project, and the line says what |
+| "error: the device token store could not be read"   | The keyring or the fallback files are unreadable; the `fix:` line is `TRAJECTOR_TOKEN_STORE=file trajector login` |
+| "error: Recording is paused everywhere"              | Something suspended recording on every project; the `why:` line says what, the `fix:` line what ends it |
 | "Images and documents: uploaded."                    | Their content goes up with the rest of the record — the default        |
 | "Images and documents: placeholders only; …"         | `upload_images_and_documents` is `false` in `config.json`: each goes up as a placeholder |
 | "error: Images and documents: placeholders only, because config.json cannot be read." | `config.json` exists but does not read; see below |
@@ -106,10 +114,11 @@ The heading is the project root `status` resolved from your current directory.
 | Line                                                             | Meaning                                                |
 | ---------------------------------------------------------------- | ------------------------------------------------------ |
 | "Contributing; recording is on for this project."                | Injection and routing table agree                      |
+| "Contributing; recording is paused for now (see Device above)."  | Injection and routing table agree, and a device-wide pause stands |
 | "Not enabled. Run `trajector enable`…"                           | Nothing is injected and nothing is granted             |
 | "warning: the injected settings and the routing table disagree." | The two records of consent do not match — run `doctor` |
 
-Two extra lines appear when they apply:
+The lines under it state the project's recording shape and what it costs, what a call the proxy did not witness is rewarded at, whether Claude Code will load trajector's hooks here, and the project's session files, below. Two more lines appear when they apply:
 
 ```
   Upstream: https://your-relay.example (third-party origin).
@@ -124,8 +133,8 @@ The first shows whenever traffic goes somewhere other than the official endpoint
 | --------------------------------------------------------- | ------------------------------------------------------------ |
 | "Running at …: version X, up Y."                          | Our proxy holds the port                                     |
 | "Not running; it starts on demand with the next session." | Normal when you are not in a session — it is not a daemon    |
-| "error: another process holds the proxy port…"            | Something else is on the port — see Troubleshooting          |
-| "error: …could not confirm…"                              | Ours could not be verified; usually a stale admin token      |
+| "error: port occupied by a process that is not the trajector proxy…" or "error: the holder of the proxy port did not answer a probe…" | Something else is on the port — see Troubleshooting |
+| "error: could not verify the proxy at …"                  | Ours could not be verified; usually a stale admin token      |
 
 {% hint style="warning" %}
 **`Recorded since it started` counts from when the proxy started, not from midnight.** The proxy exits after 30 minutes with neither traffic forwarded nor a session file gaining lines — it waits two hours instead while a session's process is still running — and is restarted by the next session, so this number resets more often than the label suggests. It counts what the proxy recorded only, not what was read from session files. A low number here does not mean recording is broken — check `Spool` and `Uploads`.
@@ -183,11 +192,11 @@ Last successful upload, last error if there was one, and an error if any batch i
 A standing refusal from the service is stated here too, with when uploads stopped:
 
 ```
-  error: Uploads are paused since 2026-09-20T14:32:00Z until 2026-09-20T14:47:00Z: the service refused this client access. Captured data is kept.
-  error: Uploads are paused since 2026-09-20T14:32:00Z: the service refused this device's credential. Captured data is kept.
+  Uploads are paused since 2026-09-20T14:32:00Z until 2026-09-20T14:47:00Z: the service refused this client access. Captured data is kept.
+  Uploads are paused since 2026-09-20T14:32:00Z: the service refused this device's credential. Captured data is kept.
 ```
 
-The first retries itself and names when the next attempt is due; the second waits for `trajector login`. Only one of the two stands at a time.
+Each is followed by the line that ends it. The first retries itself and names when the next attempt is due; the second waits for `trajector login`. Only one of the two stands at a time. Neither is marked as an error, because nothing on this machine is broken.
 
 #### Service
 
@@ -207,6 +216,7 @@ trajector 0.4.0 doctor
   ok: automatic upgrades: last checked 2026-10-13T09:02:17Z, up to date
   ok: proxy running at 127.0.0.1:41100 (version 0.4.0, up 4m12s)
   ok: injection and routing agree for this project
+  ok: Judged from configuration readable on this machine, Claude Code will load trajector's hooks in this project
   ok: every session file of this project is registered (4 session(s))
   ok: capture spool writable (184.2 KiB of 2.0 GiB used)
   ok: no rejected batches quarantined
@@ -221,8 +231,9 @@ Every line carries one of the five prefixes above. Exit is `1` when any `error:`
 
 * Puts the previous binary back when an upgrade was interrupted before the new build accepted it.
 * Starts the proxy, or replaces a proxy from an older build — including a hung proxy of ours that holds the port and answers nothing.
-* Rewrites a damaged injection: token and session hooks restored — including a session hook missing from an injection made before that hook existed.
-* Lifts a device-wide recording pause once **this** build has read the session files again and found nothing it cannot redact: `fixed: recording resumed: this build read the session files again and found nothing it cannot redact`. A pause an older build set is still lifted after an upgrade.
+* Rewrites a damaged injection in the shape the grant records: token and session hooks restored.
+* Adds a session hook missing from an injection made before that hook existed, and writes nothing else of the file: `fixed: completed the session hooks in … (1 added)`.
+* Lifts a device-wide recording pause once it has read the session files again and every line it read was whole: `fixed: recording resumed: this build read the session files again and every line it read ended in a newline`. After an upgrade it lifts a pause the previous build set: `fixed: recording resumed after upgrade: it was paused by …, and this build is …`.
 * Asks for session files this device registered but never read: `fixed: asked for 2 never-read session file(s) of this project to be read`.
 * Registers session files no hook reported, and asks for those too: `fixed: registered 1 session file(s) of this project that no hook reported, and asked for them to be read`.
 * Moves a held segment back for upload once this build reads it cleanly.
@@ -234,7 +245,7 @@ Every line carries one of the five prefixes above. Exit is `1` when any `error:`
 #### What it hands back to you
 
 * Both consent records exist but disagree about the project's identity.
-* `ANTHROPIC_BEDROCK` / `ANTHROPIC_VERTEX` is set — those channels are not supported, so the project is not being captured.
+* `CLAUDE_CODE_USE_BEDROCK` / `CLAUDE_CODE_USE_VERTEX` is set — those channels are not supported, so the project is not being captured.
 * A base URL moved to a plaintext non-loopback address, which is refused: a non-loopback upstream must use `https`.
 * The spool is unwritable or full.
 * Batches are quarantined and you have to choose `requeue` or `discard`.
