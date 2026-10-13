@@ -18,7 +18,7 @@ Then work through these in order:
 
 1. **`trajector status` in the project.** Does the Project block say `Contributing`? If it says `Not enabled`, that project was never opted in — `trajector enable`.
 2. **Is the device signed in?** `Not signed in` in the Device block pauses recording everywhere. Forwarding still works, which is why the session feels normal.
-3. **Is the agreement current?** If it changed, recording pauses until you reconfirm with `trajector enable`. `status` prints `error: Recording is paused everywhere` with the reason on the `why:` line under it and the command that ends it on the `fix:` line. An unreadable consent record pauses the same way, under its own reason naming the file — `trajector enable` is the way out of that one too.
+3. **Is the agreement current?** If it changed, recording pauses until you reconfirm with `trajector enable` — with `--no-proxy` and `--no-earlier` if the project uses them: `enable` installs the shape you give it, and without `--no-earlier` it collects the session files the project had before it was first enabled. An upgrade to 0.4.0, by hand or on its own, is such a change. `status` prints `error: Recording is paused everywhere` with the reason on the `why:` line under it and the command that ends it on the `fix:` line. An unreadable consent record pauses the same way, under its own reason naming the file — `trajector enable` is the way out of that one too.
 4. **Is Claude Code actually using the injected settings?** The injection is written to the project-local settings file. If you launched `claude` from a different directory, that project is not the one you enabled.
 5. **`trajector doctor`.** The `live proxy confirms this project routes and records` line is an end-to-end check, not a guess.
 
@@ -219,7 +219,9 @@ A full spool stops new recording rather than evicting what is already there. `tr
 Uploads are paused: the service requires client version 0.3.5 or newer; this build is 0.3.4.
 ```
 
-Your captured data is kept. `trajector upgrade`, then upload again.
+Your captured data is kept. `trajector upgrade`, then upload again. The service accepts uploads only from recent releases: from about 14 October 2026 it refuses uploads from builds older than 0.3.5.
+
+From 0.4.0, a build the service calls too old checks for a newer release every hour instead of every day, and installs it on its own — once you have accepted agreement `2026-10-13`, unless `auto_upgrade` is `false` or Homebrew owns the installation. Builds before 0.4.0 never upgrade themselves — run `trajector upgrade` (or `brew upgrade trajector`) once.
 
 ### Uploads say the service refused this client or this device
 
@@ -243,7 +245,36 @@ Only one of the two stands at a time — the later refusal replaces the earlier 
 
 Whatever the reason — no network, a checksum mismatch, no matching asset, a directory that cannot be written — **the binary you have is untouched**. The archive is verified before anything is replaced.
 
+From 0.4.0, `upgrade` also runs the new release once, and has it start a proxy of its own, before it keeps it. When either fails, the previous binary is put back in place, the command says that the new version was not installed and why, and it exits `1`. If the previous binary cannot be put back, the error says where it is.
+
+Two more cases exit `1` and only ask you to run it again:
+
+* **Another upgrade is running on this device.** `upgrade` waits two seconds, then says so. Try again in a minute.
+* **An earlier upgrade was interrupted** before the new build accepted it. `upgrade` puts the previous binary back, says which version it put back, and stops; `trajector doctor` does the same. Run `trajector upgrade` again.
+
 If a package manager owns the installation, `upgrade` refuses and names the command to use instead. That is not a failure; overwriting a package manager's files would break it.
+
+### `Automatic upgrades: the last attempt … failed`
+
+```
+  warning: Automatic upgrades: the last attempt at 2026-10-13T09:02:17Z failed: <reason>. Run `trajector upgrade`.
+```
+
+The background check failed, and the line says why — GitHub could not be reached, for instance. The binary you have is still in place, and recording goes on: this line does not change the exit code of `status`. `trajector upgrade` tries the same thing in front of you and says what went wrong. `doctor` reports it as an `error:` with `trajector upgrade` on the `fix:` line.
+
+When a release the background check found does not start on this machine, the next command you run says so, together with the version that was kept:
+
+```
+trajector <version> does not start on this machine, so <kept> was kept. `trajector upgrade` tries again.
+```
+
+### `cannot start its proxy, so trajector does not work until it is reinstalled`
+
+```
+trajector <version> cannot start its proxy, so trajector does not work until it is reinstalled: see Installation in README.
+```
+
+A newer build took over the proxy from an older one and then could not start its own. The session hooks say it as their first line, and `status` and `doctor` report it. Reinstall it as Installation describes, then run `trajector doctor`.
 
 ### Gatekeeper or SmartScreen blocks the binary
 

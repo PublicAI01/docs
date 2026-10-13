@@ -88,7 +88,7 @@ This project now contributes data. Run `trajector disable` here to stop.
 ```
 
 {% hint style="info" %}
-If the agreement text changes, recording pauses and `enable` asks you to reconfirm. It will say `The data agreement changed since you last accepted it.` before showing the new text. Upgrading to 0.3.5 is such a change: the agreement moves to version `2026-09-29`.
+If the agreement text changes, recording pauses and `enable` asks you to reconfirm. It will say `The data agreement changed since you last accepted it.` before showing the new text. Upgrading to 0.4.0 is such a change: the agreement moves to version `2026-10-13`. Run it with `--no-proxy` and `--no-earlier` if the project uses them: `enable` installs the shape you give it, and without `--no-earlier` it collects the session files the project had before it was first enabled.
 {% endhint %}
 
 | Flag           | Effect                                                                                                                    |
@@ -188,6 +188,16 @@ The Device block states what goes up of images and documents, whose content reda
   Images and documents: placeholders only; their content is not uploaded (upload_images_and_documents is false in config.json). Notebook images that older Claude Code versions keep are uploaded as they are; see PRIVACY.md.
 ```
 
+The Device block also says how trajector keeps itself up to date: when the last automatic check ran and what it found, or why automatic upgrades are off.
+
+```
+  Automatic upgrades: last checked 2026-10-13T09:02:17Z, up to date.
+  Automatic upgrades: off (config.json).
+  Automatic upgrades: off until you accept the current data agreement (run `trajector enable`).
+```
+
+A failed attempt is a `warning:` that names `trajector upgrade`; it does not count towards the exit code, because recording goes on.
+
 `status` also runs when `config.json` cannot be read, which stops every other command except `doctor bundle`. It then prints `error: Images and documents: placeholders only, because config.json cannot be read.` with the failure on the `why:` line, and exits `1`.
 
 The Spool block adds a line when this build met a segment shape it cannot redact and kept the segment back:
@@ -207,7 +217,7 @@ The first is retried by itself — one minute, then double, up to fifteen — an
 
 See Reading `status` and `doctor` for what each block means.
 
-### `trajector doctor`
+### `trajector doctor [--all]`
 
 Diagnoses and repairs. Each line is prefixed by what happened:
 
@@ -224,8 +234,9 @@ Diagnoses and repairs. Each line is prefixed by what happened:
 Exit is `0` when nothing is left over, `1` when at least one `error:` remains.
 
 ```
-trajector 0.3.5 doctor
+trajector 0.4.0 doctor
 
+  ok: automatic upgrades: last checked 2026-10-13T09:02:17Z, up to date
   ok: proxy not running; it starts on demand with the next session
   ok: this project is not enabled; nothing to reconcile
   fixed: re-added the project-discovery hint to /home/you/.claude/settings.json
@@ -264,7 +275,33 @@ Where no reader takes the ask, `doctor` reports that instead of counting it repa
 
 `doctor bundle` carries the same findings. `doctor` reads a project's recording shape from the grant written at enable time: the project's settings file is checked against that shape and repaired when it disagrees, never the other way round.
 
-What it checks: the device token store, whether recording is paused, the proxy, the injection and routing table agreeing with each other, the project's upstream, `.gitignore` coverage, the project-discovery hint, the spool, quarantined batches, and a live self-check against the running proxy.
+What it checks: the device token store, whether recording is paused, automatic upgrades, the proxy, the injection and routing table agreeing with each other, the project's upstream, `.gitignore` coverage, the project-discovery hint, the spool, quarantined batches, and a live self-check against the running proxy.
+
+When an upgrade was interrupted before the new build accepted it, `doctor` puts the previous binary back in place.
+
+#### `trajector doctor --all`
+
+Checks this device once, and then every project enabled on it, each under its own heading — the project's root — instead of only the project you are in. A project whose directory is gone is noted and skipped, and one that cannot be checked is an `error:` under its own heading that does not stop the rest.
+
+```
+trajector 0.4.0 doctor
+
+Device
+  ok: automatic upgrades: last checked 2026-10-13T09:02:17Z, up to date
+  ok: proxy running at 127.0.0.1:41100 (version 0.4.0, up 4m12s)
+  ...
+
+/path/to/project-a
+  ok: injection and routing agree for this project
+  ...
+
+/path/to/project-b
+  note: this directory is not there any more, so it was skipped
+
+Everything checks out.
+```
+
+The exit code is the same as for one project: `1` when an `error:` is left anywhere.
 
 #### `trajector doctor bundle`
 
@@ -329,15 +366,17 @@ It acts on the session, not on the working directory, so it runs from anywhere. 
 
 ### `trajector upgrade`
 
-Installs the newest published release over this one. Four outcomes, all exit `0`:
+Installs the newest published release over this one. Before it keeps the new release, it runs it once and has it start a proxy of its own; if either fails, the previous binary is put back in place.
+
+These outcomes exit `0`:
 
 ```
-Upgraded trajector 0.3.4 -> 0.3.5.
+Upgraded trajector 0.3.7 -> 0.4.0.
 A proxy from the previous build may still be running; the next session replaces it.
 ```
 
 ```
-trajector 0.3.5 is already the newest release.
+trajector 0.4.0 is already the newest release.
 ```
 
 ```
@@ -350,14 +389,25 @@ This build reports version dev, which is not a published release.
 Nothing was changed.
 ```
 
-A release that changes the data agreement bumps its version: recording pauses until you reconfirm, and the next `trajector enable` shows the new text and asks you to accept it once. Forwarding is untouched while the pause stands.
+From 0.4.0, when trajector also checks on its own — the binary in place is a published release, `auto_upgrade` is not `false`, and the data agreement you accepted describes the check — the first two end with:
 
-Anything that fails — network, checksum mismatch, no matching asset, a path that cannot be written — exits `1` and **leaves the binary you have exactly as it was**. The checksum is verified before anything is replaced, and a target that is not a file is refused outright.
+```
+trajector also checks for a newer release once a day on its own; set "auto_upgrade": false in config.json to stop that.
+```
+
+A release that changes the data agreement bumps its version: recording pauses until you reconfirm, and the next `trajector enable` (with `--no-proxy` and `--no-earlier` if you use them) shows the new text and asks you to accept it once. Forwarding is untouched while the pause stands.
+
+These exit `1`:
+
+* **The new release does not start.** It was not kept: the command says which version it kept and why the new one was not installed. If the previous binary could not be put back either, the error says where it is.
+* **Another upgrade is running on this device.** `upgrade` waits two seconds, then says so; try again in a minute.
+* **An earlier upgrade was interrupted** before the new build accepted it. `upgrade` puts the previous binary back, says which version it put back, and stops there; run it again.
+* **Anything else fails** — network, checksum mismatch, no matching asset, a path that cannot be written. The binary you have is left **exactly as it was**: the checksum is verified before anything is replaced, and a target that is not a file is refused outright.
 
 ### `trajector version`
 
 ```
-trajector 0.3.5
+trajector 0.4.0
 ```
 
 A build that was not made from a published tag reports `dev`.

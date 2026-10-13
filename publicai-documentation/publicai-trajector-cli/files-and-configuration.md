@@ -26,6 +26,8 @@ Everything lives under per-user directories your platform dictates. Nothing is w
 | `rawcalls-rejected/`  | data   | Quarantined batches, each with its records and a `reason.json`        |
 | `upload/`             | data   | Upload bookkeeping: what was acknowledged, what the service last said |
 | `proxy.log`           | state  | The proxy's log                                                       |
+| `upgrade.json`        | state  | When the automatic upgrade check last ran, and what it found          |
+| `notices.json`        | state  | Lines left for your next command, such as that trajector upgraded itself; each is shown once |
 
 Captured records are stored with the project identified only by a **hash** of its root path. Credential headers are never in any of these files.
 
@@ -43,17 +45,21 @@ Optional. It does not exist until you create it.
 {
   "platform_url": "https://api.trajector.example",
   "releases_url": "https://api.github.com/repos/PublicAI01/trajector-cli/releases",
-  "upload_images_and_documents": false
+  "upload_images_and_documents": false,
+  "auto_upgrade": false
 }
 ```
 
 | Key                           | Meaning                                                                                                   |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `platform_url`                | Where captured data is uploaded                                                                           |
-| `releases_url`                | Where `trajector upgrade` looks for a newer build                                                         |
+| `releases_url`                | Where `trajector upgrade` and the automatic check look for a newer build; anything off your own machine must be `https` |
 | `upload_images_and_documents` | `false` uploads each image and document as a placeholder instead of its content. Absent means `true`: they are uploaded |
+| `auto_upgrade`                | `false` turns the automatic upgrade check off, so nothing goes to GitHub unless you run `trajector upgrade`. Absent means `true` |
 
 `upload_images_and_documents` exists because redaction cannot see what an image or a PDF shows. The next upload uses it, also for records captured before you changed it, and the proxy does not need a restart. `trajector status` shows which of the two is in effect. What a placeholder holds and the one copy the setting does not cover are in Data and privacy.
+
+`status` and `doctor` say `Automatic upgrades: off (config.json).` while it is `false`. What the check sends is in Data and privacy, under What leaves your machine.
 
 {% hint style="danger" %}
 **None of these can be set from an environment variable, by design.**
@@ -63,7 +69,7 @@ Settings a repository ships reach a session hook's environment. If the upload de
 `install.sh` is the deliberate exception: `TRAJECTOR_API_BASE` and `TRAJECTOR_DL_BASE` do work there, because that script is only ever run by a person at a shell, never from a hook.
 {% endhint %}
 
-A `config.json` that exists but cannot be read — cut short, not JSON, not readable by your user — is a loud failure, not a silent fallback. Every command stops on it rather than quietly sending data somewhere you did not intend, with two exceptions: `trajector status` and `trajector doctor bundle` still run, name the file and the failure, and say that images and documents go up as placeholders until the file reads again. A proxy that is already running when the file breaks reads it again for every batch: until it reads, images and documents go up as placeholders, and `proxy.log` says so. A proxy does not start on such a file.
+A `config.json` that exists but cannot be read — cut short, not JSON, not readable by your user — is a loud failure, not a silent fallback. Every command stops on it rather than quietly sending data somewhere you did not intend, with two exceptions: `trajector status` and `trajector doctor bundle` still run, name the file and the failure, and say that images and documents go up as placeholders until the file reads again. Automatic upgrades are off for as long, too. A proxy that is already running when the file breaks reads it again for every batch: until it reads, images and documents go up as placeholders, and `proxy.log` says so. A proxy does not start on such a file.
 
 ```
 Device
@@ -95,6 +101,7 @@ Variables read from the surrounding Claude Code configuration, which trajector r
 | -------------- | ------------------------------------------------------------------------ |
 | Address        | `127.0.0.1:41100`, loopback only, never any other interface              |
 | Lifetime       | Started on demand by the session hook; exits after 30 minutes of silence |
+| Connections    | Closes a connection that sends no request headers within 30 seconds, and a kept-alive one that sends no new request for 10 minutes. Request bodies and streamed responses have no time limit |
 | Started by you | No. There is no daemon, no service unit, nothing to enable at boot       |
 
-A newer build takes over the port from an older one at the next session; the older proxy drains what it is carrying before exiting, so requests in flight are not disturbed.
+A newer build takes over the port from an older one at the next session; the older proxy drains what it is carrying before exiting — a reply still streaming finishes on it, for up to 10 minutes — so requests in flight are not disturbed.

@@ -46,17 +46,18 @@ The `fix:` line carries a command and nothing else. Where nothing trajector runs
 
 ```
 Recording: on (3 project(s))
-trajector 0.3.5
+trajector 0.4.0
 
 Device
   Signed in.
   Images and documents: uploaded.
+  Automatic upgrades: last checked 2026-10-13T09:02:17Z, up to date.
 
 Project /path/to/project
   Contributing; recording is on for this project.
 
 Proxy
-  Running at 127.0.0.1:41100: version 0.3.5, up 4m12s.
+  Running at 127.0.0.1:41100: version 0.4.0, up 4m12s.
   Recorded since it started: 3 (SSE degraded: 0, dropped: 0).
 
 Spool
@@ -77,6 +78,11 @@ Uploads
 | "Images and documents: uploaded."                    | Their content goes up with the rest of the record — the default        |
 | "Images and documents: placeholders only; …"         | `upload_images_and_documents` is `false` in `config.json`: each goes up as a placeholder |
 | "error: Images and documents: placeholders only, because config.json cannot be read." | `config.json` exists but does not read; see below |
+| "Automatic upgrades: last checked …, up to date." | The last automatic check found no newer release; "upgraded to X" or "managed by Homebrew" when it found one |
+| "Automatic upgrades: on; no check has run yet." | The check is on and has not run since it was turned on |
+| "Automatic upgrades: off (…)." | No automatic check: `auto_upgrade` is `false` in `config.json`, `config.json` could not be read, or this is not a release build |
+| "Automatic upgrades: off until you accept the current data agreement (run `trajector enable`)." | The agreement you accepted predates the one that describes the check |
+| "warning: Automatic upgrades: the last attempt at … failed: …" | The check or the install failed, and the line says why. Recording is not affected; `trajector upgrade` tries it by hand |
 
 The Device block always says what goes up of images and documents, because redaction cannot see what they show — see Data and privacy. With their upload turned off, the line also names the one copy the setting does not cover:
 
@@ -91,7 +97,7 @@ A `config.json` that cannot be read stops every other command, but not `status`.
     why:  reading /home/you/.config/trajector/config.json: unexpected end of JSON input; images and documents go up as placeholders until it reads.
 ```
 
-There is no `fix:` line: repair or remove the file, and the next `status` shows the setting it holds.
+There is no `fix:` line: repair or remove the file, and the next `status` shows the setting it holds. While the file cannot be read, automatic upgrades are off too.
 
 #### Project
 
@@ -136,6 +142,14 @@ Per enabled project, `status` also reports the second source: how many sessions 
 ```
 
 `Session files: none registered yet.` means no hook has reported one. No line here names a session or a session file.
+
+When the search for a project's session files could not list a directory — a session's `subagents/workflows/` directory or one of its run directories — the line names it, so the subagent conversations in it are not silently missed:
+
+```
+  Not looked at: … could not be listed, nor anything below it.
+```
+
+`status` shows what the last search that registered the project's session files could not list; `doctor` searches again and shows what it finds now.
 
 A project enabled with `--no-earlier` also carries the way back to its earlier files:
 
@@ -183,14 +197,15 @@ This block only appears while the service has a notice standing for this device:
   Notice from the service: …
 ```
 
-When the service withdraws a notice, it disappears from `status` and `doctor` after the next upload the service acknowledges. Before 0.3.5 a withdrawn notice stayed on screen.
+When the service withdraws a notice, it disappears from `status` and `doctor` after the next upload the service acknowledges.
 
 ### `doctor`, line by line
 
 ```
-trajector 0.3.5 doctor
+trajector 0.4.0 doctor
 
-  ok: proxy running at 127.0.0.1:41100 (version 0.3.5, up 4m12s)
+  ok: automatic upgrades: last checked 2026-10-13T09:02:17Z, up to date
+  ok: proxy running at 127.0.0.1:41100 (version 0.4.0, up 4m12s)
   ok: injection and routing agree for this project
   ok: every session file of this project is registered (4 session(s))
   ok: capture spool writable (184.2 KiB of 2.0 GiB used)
@@ -200,10 +215,11 @@ trajector 0.3.5 doctor
 Everything checks out.
 ```
 
-Every line carries one of the five prefixes above. Exit is `1` when any `error:` remains, so `doctor` works in a script.
+Every line carries one of the five prefixes above. Exit is `1` when any `error:` remains, so `doctor` works in a script. `trajector doctor --all` prints the same lines in parts: the device's once under `Device`, then each enabled project's under its root.
 
 #### What it repairs on its own
 
+* Puts the previous binary back when an upgrade was interrupted before the new build accepted it.
 * Starts the proxy, or replaces a proxy from an older build — including a hung proxy of ours that holds the port and answers nothing.
 * Rewrites a damaged injection: token and session hooks restored — including a session hook missing from an injection made before that hook existed.
 * Lifts a device-wide recording pause once **this** build has read the session files again and found nothing it cannot redact: `fixed: recording resumed: this build read the session files again and found nothing it cannot redact`. A pause an older build set is still lifted after an upgrade.

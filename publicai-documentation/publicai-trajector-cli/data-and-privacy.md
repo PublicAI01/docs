@@ -2,7 +2,7 @@
 
 The client is fully open source. Every statement on this page can be checked against the code in [PublicAI01/trajector-cli](https://github.com/PublicAI01/trajector-cli), and the authoritative version lives in that repository's `PRIVACY.md`.
 
-This page describes version **`2026-09-29`** of the data agreement — the version `trajector enable` shows you in full and records when you accept it. The agreement and this page state the same terms and change together; the version is the day the build carrying those terms was released.
+This page describes version **`2026-10-13`** of the data agreement — the version `trajector enable` shows you in full and records when you accept it. The agreement and this page state the same terms and change together; the version is the day the build carrying those terms was released.
 
 ### What is collected
 
@@ -27,7 +27,7 @@ The session files contain what the proxy cannot see:
 
 * your tool results, including the contents of the files that were read and the changes that were written;
 * your working directory and git branch;
-* the full conversations of subagents.
+* the full conversations of subagents, including the ones the Workflow tool starts.
 
 Files are read only for projects you enabled. Trajector never lists the folder where Claude Code keeps session files: the paths it opens are derived from the enabled projects' own paths, so the paths to other projects' session files are never constructed and those files are never opened.
 
@@ -55,7 +55,7 @@ Records are observed facts and are never rewritten. Model identifiers, thinking 
 | Credentials                 | `Authorization`, `x-api-key`, and other credential headers are never written to disk, in any file, in any state              |
 | Project paths               | Stored records and uploads identify a project only by a hash of its root path. In session records, the few fields whose value is the directory the session ran in are masked before upload; every other path is kept as observed |
 | File contents, from git     | Git observations carry paths and identifiers only — never the content of any file, and nothing is written to your repository |
-| Telemetry                   | There is no separate reporting channel. A few counters ride inside uploads you already consented to — no upload, no counters |
+| Telemetry                   | There is no separate reporting channel. A few counters ride inside uploads you already consented to — no upload, no counters. The automatic upgrade check carries the trajector version and nothing else — see below |
 | Diagnostics                 | `doctor bundle` writes an archive **you** inspect and attach. Nothing reports home on its own                                |
 
 ### On your machine
@@ -114,7 +114,7 @@ Held segments do not count against the spool quota. A later build that reads a h
 
 Recording still pauses on the whole device when a read contradicts itself — an incomplete line, where nothing the read produced can be trusted. `trajector status` names the reason, `trajector upgrade` tells you the next step while the pause stands, and `trajector doctor` lifts the pause once **this** build has read the session files again and found nothing it cannot redact. It no longer takes a different build; a pause an older build set is still lifted after the upgrade, as before.
 
-A consent record that cannot be read or parsed also pauses recording device-wide, under a reason of its own. `status`, `doctor` and the diagnostic bundle name the file and the failure, and `trajector enable` is the way out: accepting the agreement writes a new record and recording resumes.
+A consent record that cannot be read or parsed also pauses recording device-wide, under a reason of its own. `status`, `doctor` and the diagnostic bundle name the file and the failure, and `trajector enable` (with `--no-proxy` and `--no-earlier` if you use them) is the way out: accepting the agreement writes a new record and recording resumes. A changed agreement pauses recording the same way until you accept it.
 
 `trajector logout` pauses recording device-wide in the same way; forwarding is unaffected in every case, and logging in again resumes.
 
@@ -133,6 +133,16 @@ A session often sends the same image again with each later call. When the trajec
 Each batch carries a client-side idempotency key, so a retried upload can never be counted twice. Local records are deleted **only after** the service acknowledges the batch by echoing that key. Any other answer leaves your data in place for retry.
 
 The upload destination can be changed only through `config.json` in your user config directory, never through an environment variable — see Files, configuration, and environment. A non-default destination is announced at `enable` and at proxy start; it is never silent.
+
+#### The upgrade check
+
+From 0.4.0 trajector also asks GitHub whether a newer release exists. The request is an HTTPS `GET` to `https://api.github.com/repos/PublicAI01/trajector-cli/releases`, unless `releases_url` in `config.json` names another `https` source. The only header it sets is `User-Agent: trajector/<version>`: it carries no token, no project data, and no identifier of this device. GitHub sees the network address the request comes from.
+
+* **How often.** The session hooks start the check at most once every 24 hours, or at most once an hour while the trajector service answers that this version is too old. `trajector upgrade` sends the same request when you run it.
+* **What it installs.** When a newer release exists, trajector downloads its archive and `trajector_checksums.txt` from that release, and installs it only if the checksum matches.
+* **What it leaves alone.** An installation a package manager owns, such as Homebrew, is never replaced: you are told once per release to run `brew upgrade trajector`. A build made from source never checks.
+* **When it starts.** Only after you have accepted version `2026-10-13` of the agreement or a later one: that is the version whose section on updates describes the check.
+* **How to stop it.** Set `"auto_upgrade": false` in `config.json`. Then nothing goes to GitHub unless you run `trajector upgrade`.
 
 ### What happens to it
 

@@ -15,12 +15,14 @@ If `~/.local/bin` is not on your `PATH`, the script tells you the line to add fo
 | Variable                | Effect                                         |
 | ----------------------- | ---------------------------------------------- |
 | `TRAJECTOR_INSTALL_DIR` | Install somewhere other than `~/.local/bin`    |
-| `TRAJECTOR_VERSION`     | Pin a release, e.g. `TRAJECTOR_VERSION=v0.3.5` |
+| `TRAJECTOR_VERSION`     | Pin a release, e.g. `TRAJECTOR_VERSION=v0.4.0` |
 
 ```sh
-TRAJECTOR_INSTALL_DIR=/usr/local/bin TRAJECTOR_VERSION=v0.3.5 \
+TRAJECTOR_INSTALL_DIR=/usr/local/bin TRAJECTOR_VERSION=v0.4.0 \
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/PublicAI01/trajector-cli/main/install.sh)"
 ```
+
+`TRAJECTOR_VERSION` takes a release's tag as the [releases page](https://github.com/PublicAI01/trajector-cli/releases) lists it. The service accepts uploads only from recent releases, so a pinned version falls out of use over time.
 
 {% hint style="warning" %}
 **On macOS, install with the command above rather than downloading the archive in a browser.** Releases are not code-signed yet, and macOS marks anything a browser downloaded. Unpacking such an archive in Finder passes that mark to the binary, and Gatekeeper then refuses to run it. A download made by `curl` carries no mark.
@@ -34,7 +36,7 @@ On macOS, Homebrew works too:
 brew install publicai01/tap/trajector
 ```
 
-A Homebrew install is updated by `brew upgrade trajector`; `trajector upgrade` says so rather than replacing a binary Homebrew manages.
+A Homebrew install is updated by `brew upgrade trajector`. Neither `trajector upgrade` nor the automatic check replaces a binary Homebrew manages: when a newer release is out, the next trajector command you run says so once per release and names that command.
 
 ### Windows
 
@@ -78,17 +80,29 @@ The attestation proves the binary was produced by that workflow from that source
 
 ### Updating
 
+From 0.4.0, trajector keeps itself up to date. The session hooks ask GitHub for the list of releases at most once a day — at most once an hour while the trajector service answers that this version is too old — and when a newer one exists, trajector downloads it, verifies it against the release's checksum file, and installs it in the background. The request carries the trajector version and nothing else; Data and privacy says exactly what it sends. The next trajector command you run says that it happened:
+
+```
+trajector upgraded itself to <version> in the background.
+```
+
+and the session hooks of every enabled project are completed with any hook the new release adds. `status` and `doctor` show when the last check ran and what it found, or why automatic upgrades are off.
+
+The automatic check starts only once you have accepted a data agreement that describes it — version `2026-10-13` or later — and it never runs in a build made from source. To turn it off, set `"auto_upgrade": false` in `config.json` (see Files, configuration, and environment): then nothing goes to GitHub unless you run `trajector upgrade` yourself.
+
+Releases before 0.4.0 do not upgrade themselves. To move to 0.4.0 from one of them, run it by hand once:
+
 ```sh
 trajector upgrade
 ```
 
-`upgrade` moves to the newest published release — including pre-releases, which is what a beta wants. The archive's checksum is verified **before** anything is replaced: a download that fails verification leaves the binary you have exactly as it was.
+`upgrade` moves to the newest published release — including pre-releases, which is what a beta wants. The archive's checksum is verified **before** anything is replaced: a download that fails verification leaves the binary you have exactly as it was. From 0.4.0 the new release is also run once, and made to start a proxy of its own, before it is kept; if either fails, the previous binary is put back and the command says why and exits `1`.
 
 If a package manager owns the installation, `upgrade` says so and hands the job back to that manager rather than overwriting its files.
 
-A release that changes the data agreement bumps its version, and recording pauses until you reconfirm. After upgrading, the next `trajector enable` shows the updated agreement and asks you to accept it once; forwarding is untouched while the pause stands.
+A release that changes the data agreement bumps its version, and recording pauses until you reconfirm. After upgrading, the next `trajector enable` shows the updated agreement and asks you to accept it once; forwarding is untouched while the pause stands. Run it in any project you enabled, with the options that project was enabled with (`--no-proxy`, `--no-earlier`): `enable` installs the recording shape you give, and without `--no-earlier` it collects the session files the project had before it was first enabled it.
 
-0.3.5 is such a release: the agreement moves to version `2026-09-29`, so upgrading to it asks you to confirm the agreement once.
+0.4.0 is such a release: the agreement moves to version `2026-10-13`, which adds a section on updates and says that the branch name is masked. Recording pauses after the upgrade until you run `trajector enable` once (with `--no-proxy` and `--no-earlier` if you use them) and confirm it.
 
 ### Uninstalling
 
