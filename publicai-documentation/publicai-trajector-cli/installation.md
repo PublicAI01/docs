@@ -90,17 +90,25 @@ and the session hooks of every enabled project are completed with any hook the n
 
 The automatic check starts only once you have accepted a data agreement that describes it — version `2026-10-13` or later — and it never runs in a build made from source. To turn it off, set `"auto_upgrade": false` in `config.json` (see Files, configuration, and environment): then nothing goes to GitHub unless you run `trajector upgrade` yourself.
 
-Releases before 0.4.0 do not upgrade themselves. To move to 0.4.0 from one of them, run it by hand once:
+Releases before 0.4.0 do not upgrade themselves. To move to the newest release from one of them, run it by hand once:
 
 ```sh
 trajector upgrade
 ```
 
+Or run the install command again. It works from any version, including one that has no `upgrade` command or whose `upgrade` fails, and installs the newest release over the one you have, verified the same way:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/PublicAI01/trajector-cli/main/install.sh | sh
+```
+
+If you installed into another directory, set `TRAJECTOR_INSTALL_DIR` to it again; otherwise you end up with a second copy in `~/.local/bin`. If Homebrew owns the installation, run `brew upgrade trajector` instead. `trajector version` then prints the version you have.
+
 `upgrade` moves to the newest published release — including pre-releases, which is what a beta wants. The archive's checksum is verified **before** anything is replaced: a download that fails verification leaves the binary you have exactly as it was. From 0.4.0 the new release is also run once, and made to start a proxy of its own, before it is kept; if either fails, the previous binary is put back and the command says why and exits `1`.
 
 If a package manager owns the installation, `upgrade` says so and hands the job back to that manager rather than overwriting its files.
 
-A release that changes the data agreement bumps its version, and recording pauses until you reconfirm. After upgrading, the next `trajector enable` shows the updated agreement and asks you to accept it once; forwarding is untouched while the pause stands. Run it in any project you enabled, with the options that project was enabled with (`--no-proxy`, `--no-earlier`): `enable` installs the recording shape you give, and without `--no-earlier` it collects the session files the project had before it was first enabled it.
+A release that changes the data agreement bumps its version, and recording pauses until you reconfirm. After upgrading, the next `trajector enable` shows the updated agreement and asks you to accept it once; forwarding is untouched while the pause stands. Run it in any project you enabled, with the options that project was enabled with (`--no-proxy`, `--no-earlier`): `enable` installs the recording shape you give, and without `--no-earlier` it collects the session files the project had before it was first enabled.
 
 0.4.0 is such a release: the agreement moves to version `2026-10-13`, which adds a section on updates and says that the branch name is masked. Recording pauses after the upgrade until you run `trajector enable` once (with `--no-proxy` and `--no-earlier` if you use them) and confirm it.
 
