@@ -125,7 +125,7 @@ Common reasons a session is held:
 
 #### ❌ Rejected — never credited
 
-Rejection is reserved for fraud and for content we will never license, and it is final:
+Rejection is reserved for fraud, for content we will never license, and for sessions without reasoning summaries; it is final:
 
 * **Forged trajectories.** Sessions that were not produced by a real agent run.
 * **The same content uploaded from more than one account.** One recording, one payment. Coordinated re-uploading across accounts is the thing this check exists to stop.

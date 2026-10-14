@@ -2,11 +2,11 @@
 
 From **TBD-CUTOVER**, a session recorded without reasoning summaries is not rewarded. It is still recorded and uploaded, but it earns nothing.
 
-This page is the rule. It says what counts as a session with reasoning summaries, and how to turn them on for each way you run Claude Code. Every message trajector, the upload service and the dashboard show you about reasoning summaries links here.
+This page is the rule. It says what counts as a session with reasoning summaries, and how to turn them on for each way you run Claude Code. The dashboard, the upload service's messages and `trajector enable` link here.
 
 The short version:
 
-> **Turn reasoning summaries on before you start a session — in a terminal with `showThinkingSummaries`, in the desktop app with the Thinking transcript view, and with `--thinking-display summarized` for `claude -p` and the Agent SDK.**
+> **Turn reasoning summaries on before you start a session — in a terminal with `showThinkingSummaries`, in the desktop app with the Thinking transcript view, with `--thinking-display summarized` for `claude -p`, and with `thinking.display: "summarized"` in the Agent SDK.**
 
 ***
 
@@ -22,8 +22,7 @@ A session has reasoning summaries when, in its main conversation, **at least hal
 
 * **Main conversation only.** Subagents are not counted: whether a subagent's model writes summaries is not something you control.
 * **At least three responses with reasoning.** A session with fewer is too short to tell, and this rule does not decide it; the other checks on the [Rewards](rewards.md) page still apply.
-* **Progress notes alone don't reach half.** With summaries off, Claude Code still returns a short progress note now and then. Those notes are too sparse to get a session over the line.
-* **Encrypted reasoning counts as a response without text.**
+* **Only the model's reasoning text counts.** Claude Code's occasional progress notes are not summaries.
 * **The whole session is judged, and judged again as it grows.** A session that is not rewarded under this rule stays that way, even if later responses carry summaries.
 * **It applies to sessions first uploaded on or after TBD-CUTOVER.** A session that had started uploading before then is not affected by this rule, however long it runs.
 
@@ -67,7 +66,7 @@ What it costs you, honestly:
 
 **If you also use Claude Code in a terminal**, keep `showThinkingSummaries` on there. Whether it is set for a project or in `~/.claude/settings.json`, it does not get in the way of the desktop app's Thinking view.
 
-**If the Thinking view shows no summaries**, the desktop app has not made them available to your account, and its sessions cannot have them. Record the sessions you contribute with Claude Code in a terminal instead. (On such an account, `showThinkingSummaries` also hides the desktop app's short progress notes; it does not bring summaries.)
+**If the Thinking view shows no summaries**, the desktop app has not made them available to your account, and its sessions cannot have them. Record the sessions you contribute with Claude Code in a terminal instead.
 
 #### `claude -p` and the Agent SDK
 
@@ -86,27 +85,28 @@ query({
 });
 ```
 
+#### Anywhere else
+
+We haven't checked how other ways of running Claude Code, such as IDE extensions or remote sessions, turn summaries on. Run one session, then look at My data: if it shows no summaries, record with Claude Code in a terminal instead.
+
 ***
 
 ### Check that it worked
 
-* **Your dashboard's My data page** shows how many of your sessions in the last seven days had reasoning summaries, grouped by how you ran Claude Code, and marks each session. It counts the same way this rule does; sessions too short to tell are listed apart.
-* **`trajector status`** in the project counts the assistant lines of its session files that carry no reasoning:
+* **Your dashboard's My data page is the check that counts.** It shows how many of your sessions in the last seven days had reasoning summaries, grouped by how you ran Claude Code, and marks each session. It counts the same way this rule does; sessions too short to tell are listed apart.
+* **`trajector status`** in the project gives a rough local count, subagents included:
 
   ```
     12 of 40 assistant lines carry no reasoning.
   ```
 
-* **In the session itself**, when most of a session's reasoning carries no text, trajector says so once a day per project, with the step for the way you ran it:
+* **In the session itself**, when most of its reasoning carries no text, trajector tells you at most once a day per project, with the next step for the way you ran it. For example:
 
   ```
   trajector: no reasoning summaries in this session; run trajector enable, then start a new session
-  trajector: no reasoning summaries in this session; set transcript view to Thinking, then start anew
-  trajector: no reasoning summaries in this session; add --thinking-display summarized and rerun
-  trajector: no reasoning summaries in this session; run trajector status to see how to turn them on
   ```
 
-  It never blocks you. These counts are trajector's reading on your machine; the rule above is applied on the server.
+  It never blocks you.
 
 ### When this takes effect
 
@@ -114,4 +114,4 @@ query({
 * **From TBD-CUTOVER:** sessions first uploaded from then on without reasoning summaries are not rewarded. They show as rejected in My data — see [Rewards](rewards.md).
 * **Nothing is retroactive.** Sessions uploaded before TBD-CUTOVER, and rewards already credited, are not touched.
 
-trajector TBD-CLI-VERSION and later ask for `showThinkingSummaries` as a required setting. Its data agreement changes with it, so after upgrading, the next `trajector enable` asks you to confirm the updated agreement once — and asks about this setting at the same time.
+trajector TBD-CLI-VERSION and later ask for `showThinkingSummaries` as a required setting. Its data agreement changes with it, so after upgrading, recording pauses until you run `trajector enable` once (with `--no-proxy` and `--no-earlier` if you use them) to confirm the updated agreement. It asks about this setting at the same time.

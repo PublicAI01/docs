@@ -92,7 +92,7 @@ Recording: on (1 project(s))
 ```
 
 {% hint style="info" %}
-If the agreement text changes, recording pauses and `enable` asks you to reconfirm. It will say `The data agreement changed since you last accepted it.` before showing the new text. Upgrading to 0.4.0 is such a change: the agreement moves to version `2026-10-13`. Run it with `--no-proxy` and `--no-earlier` if the project uses them: `enable` installs the shape you give it, and without `--no-earlier` it collects the session files the project had before it was first enabled.
+If the agreement text changes, recording pauses and `enable` asks you to reconfirm. It will say `The data agreement changed since you last accepted it.` before showing the new text. Upgrading to TBD-CLI-VERSION is such a change: the agreement moves to version `TBD-AGREEMENT`. Run it with `--no-proxy` and `--no-earlier` if the project uses them: `enable` installs the shape you give it, and without `--no-earlier` it collects the session files the project had before it was first enabled.
 {% endhint %}
 
 | Flag           | Effect                                                                                                                    |
