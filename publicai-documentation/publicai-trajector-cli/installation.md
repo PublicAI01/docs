@@ -110,7 +110,7 @@ If a package manager owns the installation, `upgrade` says so and hands the job 
 
 A release that changes the data agreement bumps its version, and recording pauses until you reconfirm. After upgrading, the next `trajector enable` shows the updated agreement and asks you to accept it once; forwarding is untouched while the pause stands. Run it in any project you enabled, with the options that project was enabled with (`--no-proxy`, `--no-earlier`): `enable` installs the recording shape you give, and without `--no-earlier` it collects the session files the project had before it was first enabled.
 
-TBD-CLI-VERSION is such a release: the agreement moves to version `TBD-AGREEMENT`. Recording pauses after the upgrade until you run `trajector enable` once (with `--no-proxy` and `--no-earlier` if you use them) and confirm it.
+0.5.0 is such a release: the agreement moves to version `2026-10-14`. Recording pauses after the upgrade until you run `trajector enable` once (with `--no-proxy` and `--no-earlier` if you use them) and confirm it.
 
 ### Uninstalling
 

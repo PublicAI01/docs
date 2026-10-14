@@ -2,7 +2,7 @@
 
 The client is fully open source. Every statement on this page can be checked against the code in [PublicAI01/trajector-cli](https://github.com/PublicAI01/trajector-cli), and the authoritative version lives in that repository's `PRIVACY.md`.
 
-This page describes version **`2026-10-13`** of the data agreement — the version `trajector enable` shows you in full and records when you accept it. The agreement and this page state the same terms and change together; the version is the day the build carrying those terms was released.
+This page describes version **`2026-10-14`** of the data agreement — the version `trajector enable` shows you in full and records when you accept it. The agreement and this page state the same terms and change together; the version is the day the build carrying those terms was released.
 
 ### What is collected
 

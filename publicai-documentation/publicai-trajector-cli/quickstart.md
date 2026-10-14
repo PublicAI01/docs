@@ -39,7 +39,7 @@ trajector enable --no-proxy   # session files + git observation only
 **Desktop Claude Code sessions cannot go through the proxy.** The desktop host sets its own API base URL and ignores the settings the CLI writes for a project, so no proxy can sit in front of it. Those sessions are still recorded from their session files, and a session file recorded live counts at the full rate — see Rewards for what "recorded live" means.
 {% endhint %}
 
-If an upgrade — by `trajector upgrade` or the automatic one — brings a changed data agreement, recording pauses and the next `trajector enable` asks you to confirm the updated agreement once; run it with `--no-proxy` and `--no-earlier` if the project uses them. Upgrading to TBD-CLI-VERSION is such a case: the agreement moves to version `TBD-AGREEMENT`, and accepting it is also what turns on the automatic upgrade check.
+If an upgrade — by `trajector upgrade` or the automatic one — brings a changed data agreement, recording pauses and the next `trajector enable` asks you to confirm the updated agreement once; run it with `--no-proxy` and `--no-earlier` if the project uses them. Upgrading to 0.5.0 is such a case: the agreement moves to version `2026-10-14`, and accepting it is also what turns on the automatic upgrade check.
 
 After you accept, it:
 

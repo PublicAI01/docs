@@ -1,6 +1,6 @@
 # Reasoning summaries
 
-From **TBD-CUTOVER**, a session recorded without reasoning summaries is not rewarded. It is still recorded and uploaded, but it earns nothing.
+From **Oct 17, 2026 (00:00 UTC)**, a session recorded without reasoning summaries is not rewarded. It is still recorded and uploaded, but it earns nothing.
 
 This page is the rule. It says what counts as a session with reasoning summaries, and how to turn them on for each way you run Claude Code. The dashboard, the upload service's messages and `trajector enable` link here.
 
@@ -24,7 +24,7 @@ A session has reasoning summaries when, in its main conversation, **at least hal
 * **At least three responses with reasoning.** A session with fewer is too short to tell, and this rule does not decide it; the other checks on the [Rewards](rewards.md) page still apply.
 * **Only the model's reasoning text counts.** Claude Code's occasional progress notes are not summaries.
 * **The whole session is judged, and judged again as it grows.** A session that is not rewarded under this rule stays that way, even if later responses carry summaries.
-* **It applies to sessions first uploaded on or after TBD-CUTOVER.** A session that had started uploading before then is not affected by this rule, however long it runs.
+* **It applies to sessions first uploaded on or after Oct 17, 2026.** A session that had started uploading before then is not affected by this rule, however long it runs.
 
 Two consequences follow from the rule:
 
@@ -110,8 +110,8 @@ We haven't checked how other ways of running Claude Code, such as IDE extensions
 
 ### When this takes effect
 
-* **From TBD-NOTICE-START to TBD-CUTOVER:** nothing changes for your rewards. Sessions without reasoning summaries are marked on your dashboard, and the upload service's message in `trajector status` says how many of each upload had none, so you can fix your setup in time.
-* **From TBD-CUTOVER:** sessions first uploaded from then on without reasoning summaries are not rewarded. They show as rejected in My data — see [Rewards](rewards.md).
-* **Nothing is retroactive.** Sessions uploaded before TBD-CUTOVER, and rewards already credited, are not touched.
+* **From Oct 14, 2026 to Oct 17, 2026:** nothing changes for your rewards. Sessions without reasoning summaries are marked on your dashboard, and the upload service's message in `trajector status` says how many of each upload had none, so you can fix your setup in time.
+* **From Oct 17, 2026:** sessions first uploaded from then on without reasoning summaries are not rewarded. They show as rejected in My data — see [Rewards](rewards.md).
+* **Nothing is retroactive.** Sessions uploaded before Oct 17, 2026, and rewards already credited, are not touched.
 
-trajector TBD-CLI-VERSION and later ask for `showThinkingSummaries` as a required setting. Its data agreement changes with it, so after upgrading, recording pauses until you run `trajector enable` once (with `--no-proxy` and `--no-earlier` if you use them) to confirm the updated agreement. It asks about this setting at the same time.
+trajector 0.5.0 and later ask for `showThinkingSummaries` as a required setting, and from Oct 17, 2026 uploads from older versions are refused with a message asking you to upgrade. Its data agreement changes with it, so after upgrading, recording pauses until you run `trajector enable` once (with `--no-proxy` and `--no-earlier` if you use them) to confirm the updated agreement. It asks about this setting at the same time.
