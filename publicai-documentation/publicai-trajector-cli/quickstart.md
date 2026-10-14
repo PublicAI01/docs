@@ -44,7 +44,7 @@ If an upgrade — by `trajector upgrade` or the automatic one — brings a chang
 After you accept, it:
 
 * mints a token for this project and records the grant;
-* offers to turn on Claude Code's `showThinkingSummaries` for this project, and asks first;
+* asks to turn on Claude Code's `showThinkingSummaries` for this project — sessions without reasoning summaries are not rewarded, see [Reasoning summaries](reasoning-summaries.md);
 * injects the base URL and session hooks into this project's Claude Code settings, and prints the path it wrote;
 * adds the injected settings and diagnostic bundles to `.gitignore`, so they are never committed;
 * runs an end-to-end self-check against the live proxy.

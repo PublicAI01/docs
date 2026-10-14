@@ -8,6 +8,7 @@
   * [Reading output](publicai-trajector-cli/reading-output.md)
   * [Files and configuration](publicai-trajector-cli/files-and-configuration.md)
   * [Rewards](publicai-trajector-cli/rewards.md)
+  * [Reasoning summaries](publicai-trajector-cli/reasoning-summaries.md)
   * [Data and privacy](publicai-trajector-cli/data-and-privacy.md)
   * [Troubleshooting](publicai-trajector-cli/troubleshooting.md)
 * [📊 PublicAI Index](publicai-index/README.md)

@@ -61,7 +61,7 @@ Project /path/to/project
   Judged from configuration readable on this machine, Claude Code will load trajector's hooks in this project
   Session files: 4 session(s) registered; last read 2026-10-13T09:12:41Z; 0 B not read yet.
   Sessions started under another spelling of this project's path, or under a directory name Claude Code was told to use instead, are stored under names this device does not compute and are not collected.
-  Optional settings: showThinkingSummaries on (set by trajector).
+  Claude Code settings: showThinkingSummaries on (set by trajector).
 
 Proxy
   Running at 127.0.0.1:41100: version 0.4.0, up 4m12s.

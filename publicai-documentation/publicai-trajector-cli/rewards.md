@@ -129,6 +129,7 @@ Rejection is reserved for fraud and for content we will never license, and it is
 
 * **Forged trajectories.** Sessions that were not produced by a real agent run.
 * **The same content uploaded from more than one account.** One recording, one payment. Coordinated re-uploading across accounts is the thing this check exists to stop.
+* **Sessions without reasoning summaries**, first uploaded from TBD-CUTOVER. They carry no record of the model's reasoning, which is what the buyer pays for. The rule, and how to turn summaries on for each way you run Claude Code, are on the [Reasoning summaries](reasoning-summaries.md) page.
 
 Everything else is held for review rather than rejected.
 

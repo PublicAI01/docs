@@ -76,7 +76,7 @@ On acceptance:
 1. If the device is not paired yet, pairing runs first.
 2. If the project already has a base URL configured, that relay is detected and named, and traffic keeps flowing through it. Records are marked third-party origin.
 3. A project token is minted and the grant recorded.
-4. It offers to turn on Claude Code's `showThinkingSummaries` for this project only, and asks first. Saying no changes nothing else; `trajector disable` puts the setting back.
+4. It asks to turn on Claude Code's `showThinkingSummaries` for this project only. The setting is required: if you say no, recording goes on, but sessions without reasoning summaries are not rewarded — see [Reasoning summaries](reasoning-summaries.md). `trajector disable` puts the setting back.
 5. The base URL and session hooks are injected into the project's Claude Code settings; the file path is printed. With `--no-proxy`, the session hooks are installed and no base URL is injected.
 6. The injected settings and diagnostic bundles are added to `.gitignore`.
 7. A self-check runs against the live proxy, end to end.
@@ -194,7 +194,7 @@ The Uploads block counts what is waiting to upload, by kind:
   Records waiting to upload: 3 rawcall(s), 12 segment(s), 2 session snapshot(s), 1 git snapshot(s); the oldest is from 2026-09-20T08:41:02Z.
 ```
 
-`Session files: none registered yet.` appears until a hook has reported one. The reader's findings about the files' shape are counts and field names only — never a path or a session id — and a count of assistant lines that carried no reasoning points at `showThinkingSummaries` when that setting is off.
+`Session files: none registered yet.` appears until a hook has reported one. The reader's findings about the files' shape are counts and field names only — never a path or a session id — and a count of assistant lines that carried no reasoning points at `showThinkingSummaries` when that setting is off, saying that sessions without reasoning summaries are not rewarded — see [Reasoning summaries](reasoning-summaries.md).
 
 The Device block states what goes up of images and documents, whose content redaction cannot see — one of these, the second when `upload_images_and_documents` is `false` in `config.json`:
 
