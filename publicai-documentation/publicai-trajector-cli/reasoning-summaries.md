@@ -85,9 +85,23 @@ query({
 });
 ```
 
+#### VS Code extension
+
+The extension takes `showThinkingSummaries` only from your user settings file, `~/.claude/settings.json`. The project setting that `trajector enable` writes is not enough on its own. Put this in `~/.claude/settings.json`:
+
+```json
+{
+  "showThinkingSummaries": true
+}
+```
+
+If the file already has other settings, add only the `"showThinkingSummaries": true` line inside its outer braces. The setting then applies to every project, and the extension shows the summaries in the conversation.
+
+Then start a new session in the extension.
+
 #### Anywhere else
 
-We haven't checked how other ways of running Claude Code, such as IDE extensions or remote sessions, turn summaries on. Run one session, then look at My data: if it shows no summaries, record with Claude Code in a terminal instead.
+We haven't checked how other ways of running Claude Code, such as other IDE extensions or remote sessions, turn summaries on. Run one session, then look at My data: if it shows no summaries, record with Claude Code in a terminal instead.
 
 ***
 
