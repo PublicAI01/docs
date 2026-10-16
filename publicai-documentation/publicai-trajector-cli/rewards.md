@@ -1,10 +1,12 @@
 # Rewards
 
+_Last updated: October 20, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
+
 Trajector pays you for the coding sessions you contribute. This page explains exactly how much you earn, when it lands in your balance, and how you get it out.
 
 The short version:
 
-> **You earn USD for every token in an accepted session. You withdraw that balance as a stablecoin (USDC or USDT) on Ethereum or BSC once it reaches $10. The network fee is deducted from the payout.**
+> **You earn USD for every token in an accepted session. Each credit can be withdrawn 7 days after it lands. You withdraw as a stablecoin (USDC or USDT) on Ethereum or BSC once the withdrawable amount reaches $10. The network fee is deducted from the payout.**
 
 ### During the beta: what is collected
 
@@ -28,7 +30,7 @@ What happens to everything else:
 
 Tip: sessions recorded with thinking effort set to `max` are more valuable to the current buyer. That is a recommendation, not a requirement — every effort level is accepted and rewarded the same.
 
-Withdrawals are open during the beta. Beta rules — collection scope, rates, limits and acceptance rules — may change, as posted here; rewards already credited are never repriced.
+Withdrawals are open during the beta. The rules on this page — collection scope, rates, limits, acceptance rules and the holding period — may change. A change applies from the moment it is published here, with the date at the top of this page; rewards already credited are never repriced. A new version of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms) is a different matter: you have 30 days to accept it, after which uploads require it. Your balance can always be withdrawn either way.
 
 ***
 
@@ -108,7 +110,9 @@ Uploading a session is not the same as earning from it. Every uploaded session i
 
 #### ✅ Accepted — credited
 
-The session passed every check. Your **Claimable Reward** goes up immediately, and the session appears in **My data** with the reward it earned.
+The session passed every check. It is credited to your balance, and the session appears in **My data** with the reward it earned. The credit can be withdrawn 7 days later (§4).
+
+**Daily volume caps.** There is a per-account and a per-device cap on tokens credited per UTC day. Tokens over the cap are not held and not lost: they are credited the next UTC day, and so on until all of them are credited.
 
 #### ⏸️ Held — under review, not lost
 
@@ -116,12 +120,11 @@ Something about the session needs a human to look at it. Held sessions earn noth
 
 Common reasons a session is held:
 
-* **Daily volume caps.** There is a per-account and a per-device cap on tokens credited per UTC day. Going over the cap does not destroy the sessions — they queue for review, because legitimately high-volume contributors exist.
 * **Thin sessions.** No real prompt from you, no tool call, and no file change. There is nothing to learn from a session where nothing happened.
 * **Sessions that do not change code.** Trajector pays for coding sessions only. A session that does not change code is held and is not paid.
 * **Quality gates.** The trajectory didn't meet the collection thresholds (for example, too few assistant turns, or a tool-error ratio high enough that the session is mostly failure noise).
 * **Fragments.** Content that is already fully contained in another session you uploaded.
-* **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. You can delete a held session yourself from **My data** at any time before you claim it.
+* **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. The session is released only if a reviewer finds the hit was a false positive. You can delete a held session yourself from **My data** at any time before you claim it.
 
 #### ❌ Rejected — never credited
 
@@ -141,7 +144,7 @@ The dashboard shows three numbers:
 
 | Number               | Meaning                                                                                                     |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Claimable Reward** | What you can withdraw right now. Goes to $0 when you claim.                                                 |
+| **Withdrawable Now** | What you can withdraw right now. Credits from the last 7 days are shown under it as _still maturing_, with the date they become withdrawable. Goes to $0 when you claim. |
 | **Total Reward**     | Everything you have ever earned. Does **not** go down when you claim.                                       |
 | **Total Tokens**     | Lifetime tokens credited across all accepted sessions, counted in full whether or not the proxy saw the call. |
 
@@ -149,14 +152,19 @@ Total Reward isn't simply Total Tokens × rate: tokens are counted in full for e
 
 Below them you'll find a breakdown by agent type (Claude Code, Cursor, Codex, Gemini CLI, …) with tokens and session counts, and a daily contribution chart so you can see your contribution rhythm over time.
 
-Every movement in your balance is recorded in an append-only ledger. Nothing is ever edited or deleted — a correction is posted as its own entry, so the history always adds up to the balance you see. Entry types:
+Every movement in your balance is recorded in an append-only ledger. Nothing is ever edited or deleted — a correction is posted as its own entry, so the history always adds up to the balance you see. The **Ledger** section of the Claim page lists it: credits are grouped into one line per UTC day, and every other entry has its own line with its date, type and amount. Entry types:
 
 | Type       | Effect                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
 | `accrual`  | + a session was credited                                               |
 | `claim`    | − a payout was sent to you                                             |
 | `fee`      | − the network fee on that payout                                       |
-| `reversal` | ± a correction (a failed payout returning your balance, or a deletion) |
+| `bonus`    | + a bonus, or a balance moved from another account of yours when accounts are merged, shown with its reason |
+| `reversal` | ± a correction: a failed payout returning your balance, a deletion, a cancelled bonus, or an offset (below) |
+
+#### If rewards have to be returned
+
+If we conclude that a reward was obtained through abuse, or that you contributed work that was not yours to contribute, we email you the kind of problem and the facts we rely on, the sessions concerned and the amount. You have 14 days to reply to [support@publicai.io](mailto:support@publicai.io); someone who was not involved in the finding reviews your reply, and we answer in writing within 14 days; withdrawals are frozen meanwhile. Only after that is anything taken: an unwithdrawn reward is cancelled, and an amount already withdrawn is deducted from your balance and from later credits; if that is not enough, we may ask you to repay the rest. That deduction appears in the ledger as an offset with its reason. The full rule is §6 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms).
 
 #### Why one conversation can appear as several "parts"
 
@@ -168,7 +176,8 @@ The CLI uploads in batches, so one long conversation may be flushed to the serve
 
 #### Requirements
 
-* **Minimum $10.00.** Below that, the claim button is disabled and your balance keeps accumulating.
+* **Minimum $10.00**, counted on the withdrawable amount. Below that, the claim button is disabled and your balance keeps accumulating.
+* **Holding period: 7 days.** Each credit becomes withdrawable 7 days after it was credited. A session credited after review counts from the moment it is credited. Bonuses are withdrawable at once. Credits made before the holding period took effect on October 27, 2026 are not subject to it. The holding period may change, but never to more than 30 days.
 * **A wallet address** bound for the network you're claiming on. You can add or change it at claim time, and it is saved for next time.
 * **Networks:** Ethereum and BSC.
 * **Assets:** USDC and/or USDT, depending on what is currently open for that network. If more than one is open you choose; if exactly one is open it is selected for you.
@@ -185,14 +194,14 @@ The CLI uploads in batches, so one long conversation may be flushed to the serve
     ```
 
     The network fee (typically $1–2) is deducted from the payout, not billed separately.
-2. **Confirm.** Your claimable balance drops to $0 the moment the claim is created — before the transaction is confirmed on chain. This is intentional: the money is reserved for your claim so it cannot be spent twice by a second request. Your **Total Reward** is unaffected.
+2. **Confirm.** The amount you claim leaves your balance the moment the claim is created — before the transaction is confirmed on chain. This is intentional: the money is reserved for your claim so it cannot be spent twice by a second request. Your **Total Reward** is unaffected.
 3.  **Settlement.** The payout worker builds, signs, and broadcasts the transfer, then waits for on-chain confirmation. This takes anywhere from seconds to a few minutes.
 
     | State       | Meaning                                                                            |
     | ----------- | ---------------------------------------------------------------------------------- |
     | `pending`   | Created and queued or broadcast; waiting for confirmation                          |
     | `confirmed` | On chain. The transaction hash is recorded and shown to you                        |
-    | `failed`    | Did not go through — **your full balance, fee included, is returned to Claimable** |
+    | `failed`    | Did not go through — **the full amount, fee included, is returned to your balance** |
 
 **A failed payout never costs you anything.** The balance is restored in full and you can claim again. Claims never leave you with a negative balance, and a stuck transaction never silently eats a balance.
 
@@ -204,7 +213,7 @@ Claims are rate-limited per account. This protects the service, not your money �
 
 You can browse every session you have uploaded under **My data**, including the exact redacted payload we hold — the same bytes a data buyer would receive.
 
-**Sessions whose reward you have not yet withdrawn can be deleted yourself.** Deleting one blanks the stored payload and **reverses that session's reward out of your claimable balance**. The exact amount to be reversed is shown in the confirmation dialog before you commit. This unwinds the exchange cleanly: we no longer hold the data, and we no longer owe you for it.
+**Sessions whose reward you have not yet withdrawn can be deleted yourself.** Deleting one blanks the stored payload and **reverses that session's reward out of your balance**. The exact amount to be reversed is shown in the confirmation dialog before you commit. This unwinds the exchange cleanly: we no longer hold the data, and we no longer owe you for it.
 
 **Sessions whose reward has already been paid out cannot be deleted with a button.** That data is the consideration for a payment already sent on chain. Submit a deletion request instead: it goes to a review queue, where one admin reviews it and a second admin carries out the deletion, and then the payload is erased for real. **The money already paid is not clawed back** — your right to erasure does not depend on returning it.
 
@@ -217,7 +226,9 @@ Two things survive a deletion, deliberately:
 
 ### FAQ
 
-**Do I get paid more for better code?** Not in this version. Pricing is purely per token on accepted sessions. A retention-based multiplier — rewarding agent-written lines that survive to a commit — is a planned future addition, and the attribution data needed for it is already being stored.
+**Do I get paid more for better sessions?** The token rate is the same for every accepted session. Separately, Trajector may periodically pay a quality bonus for sessions with substantial human direction and a verified result. How sessions are selected for it is not published.
+
+**Can I use more than one account?** No. One person, one account. Pair all your machines with the same account. If we find more than one account of yours, we merge them: the balance moves to the account you keep, and the others are closed. Using extra accounts to earn more or to get around a limit is abuse, and its rewards are recovered.
 
 **Does re-uploading the same session pay twice?** No. Each session is credited exactly once, and duplicate uploads of the same API calls are detected and not paid again.
 
@@ -225,6 +236,8 @@ Two things survive a deletion, deliberately:
 
 **Can my rate change after I've contributed?** The rate can change going forward, but never for rewards already credited — the rate is locked into each ledger entry when it is written.
 
-**I claimed and my balance went to zero, but the transaction isn't confirmed yet.** That's expected. The balance is reserved at the moment you claim. If the transaction ends up failing, the full amount — including the fee — returns to your claimable balance automatically.
+**Why can't I withdraw everything in my balance?** Credits from the last 7 days are still maturing. The dashboard shows the amount and the date it becomes withdrawable.
 
-**Why is my Total Reward still showing an amount after I claimed?** Total Reward is lifetime earnings and never resets. Only Claimable Reward goes to zero.
+**I claimed and my balance went down, but the transaction isn't confirmed yet.** That's expected. The balance is reserved at the moment you claim. If the transaction ends up failing, the full amount — including the fee — returns to your balance automatically.
+
+**Why is my Total Reward still showing an amount after I claimed?** Total Reward is lifetime earnings and never resets. Only the withdrawable amount goes down.
