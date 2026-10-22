@@ -1,6 +1,6 @@
 # Rewards
 
-_Last updated: October 20, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
+_Last updated: October 21, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
 
 Trajector pays you for the coding sessions you contribute. This page explains exactly how much you earn, when it lands in your balance, and how you get it out.
 
@@ -108,6 +108,22 @@ This matters most if you cannot run the proxy at all. The Claude desktop app tal
 
 Uploading a session is not the same as earning from it. Every uploaded session is checked on the server, and lands in one of three states.
 
+#### What an accepted session needs
+
+Besides being on a collected model (top of this page) and carrying reasoning summaries (below), a session needs all of these:
+
+| Requirement             | Accepted when                                                                                                                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| It changes code         | At least one code file is written — a source, configuration or build file — by `Edit`, `MultiEdit`, `Write` or `NotebookEdit`, or by a shell command that writes one. Prose such as `.md` or `.txt` and data such as `.csv` do not count |
+| You asked for something | At least one prompt you typed                                                                                                                                                                       |
+| The agent acted         | At least one tool call                                                                                                                                                                              |
+| Model responses         | At least 5                                                                                                                                                                                          |
+| Responses with thinking | At least 3                                                                                                                                                                                          |
+| Failed tool calls       | At most 25% of tool results are errors                                                                                                                                                              |
+| Scheduled prompts       | At most 25% of your prompts come from a scheduled task                                                                                                                                              |
+
+Code writes are counted over the whole session, subagents included. The other requirements are checked on each conversation in the session — the main one and each subagent's — separately, and **My data** shows each on its own chain line.
+
 #### ✅ Accepted — credited
 
 The session passed every check. It is credited to your balance, and the session appears in **My data** with the reward it earned. The credit can be withdrawn 7 days later (§4).
@@ -116,13 +132,12 @@ The session passed every check. It is credited to your balance, and the session 
 
 #### ⏸️ Held — under review, not lost
 
-Something about the session needs a human to look at it. Held sessions earn nothing _yet_. If a reviewer accepts one, it is credited at that point exactly as if it had been accepted on arrival — nothing is lost by being held.
+Something stops the session being accepted for now. Held sessions earn nothing _yet_. If a reviewer accepts one, it is credited at that point exactly as if it had been accepted on arrival — nothing is lost by being held.
 
 Common reasons a session is held:
 
-* **Thin sessions.** No real prompt from you, no tool call, and no file change. There is nothing to learn from a session where nothing happened.
-* **Sessions that do not change code.** Trajector pays for coding sessions only. A session that does not change code is held and is not paid.
-* **Quality gates.** The trajectory didn't meet the collection thresholds (for example, too few assistant turns, or a tool-error ratio high enough that the session is mostly failure noise).
+* **Short of a requirement above.** A session that is only too short so far — too few responses, no code written yet — needs no reviewer: it is accepted on its own once it grows past the line. A session over the failed-tool-call or scheduled-prompt limit goes to a reviewer.
+* **Exceptionally large sessions.** A session too large for the server to check yet is held, and is checked once the server can take it.
 * **Fragments.** Content that is already fully contained in another session you uploaded.
 * **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. The session is released only if a reviewer finds the hit was a false positive. You can delete a held session yourself from **My data** at any time before you claim it.
 

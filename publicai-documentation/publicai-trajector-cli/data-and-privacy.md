@@ -165,7 +165,7 @@ What a record is worth does depend on whether the local proxy witnessed the call
 
 Every deletion above applies to all three kinds of records in the same way, and reaches trajector's own copies only: the session files Claude Code writes on your machine are yours, and trajector never modifies or deletes them — not on `disable`, not on `uninstall`.
 
-Data already delivered and compensated is licensed under the agreement you accepted at enable time. Deletion requests reach everything before that point.
+Deletion can't reach copies already delivered to buyers, which stay under the license you granted, or anything already published in an open dataset. It reaches everything else. §5 of the [Data Collection and Use Authorization](https://trajector.publicai.io/terms) states this in full.
 
 ### Reporting a vulnerability
 

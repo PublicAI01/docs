@@ -157,7 +157,7 @@ With `--purge` you additionally get:
 Requested deletion of this project's uploaded, undelivered data.
 ```
 
-Data already delivered and rewarded is covered by an irrevocable license and cannot be recalled. Everything else can.
+Deletion can't reach copies already delivered to buyers, which stay under the license you granted, or anything already published in an open dataset. It reaches everything else.
 
 Running `disable` in a project that was never enabled prints `This project is not enabled; nothing to do.` and exits `0`.
 

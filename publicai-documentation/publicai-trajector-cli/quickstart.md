@@ -136,4 +136,4 @@ Records are deleted from the spool as soon as the service acknowledges the batch
 | This project                       | `trajector disable`         | Removes the injection, revokes the project token, deletes this project's unuploaded data |
 | This project and its uploaded data | `trajector disable --purge` | The above, plus a deletion request for uploaded data not yet delivered                   |
 | Recording everywhere               | `trajector logout`          | Recording pauses on every project; forwarding is unaffected                              |
-| Everything                         | `trajector uninstall`       | Removes every injection and stops the proxy; `--delete-data` also deletes local data and the device token |
+| Trajector on this machine          | `trajector uninstall`       | Removes every injection and stops the proxy; `--delete-data` also deletes local data and the device token |
