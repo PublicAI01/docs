@@ -137,10 +137,9 @@ Something stops the session being accepted for now, and it earns nothing _yet_. 
 * **Too short so far.** Fewer model responses, responses with thinking or tool calls than the requirements above. No reviewer is involved: keep working in the session, and it is accepted on its own once it passes the minimums.
 * **Not a coding session.** No code file was written (the first requirement above). Trajector pays for coding sessions only, so such a session is held and is not paid.
 * **No buyer yet.** Part of the session — usually a subagent — ran on a model outside the collected list at the top of this page. Keep subagents on a collected model too.
-* **Waiting on us.** Something has to be settled on our side first, such as confirming the version of the model the session ran on. There is nothing for you to change.
+* **Waiting on us.** Something has to be settled on our side first, such as confirming the version of the model the session ran on. There is nothing for you to change. This also covers **exceptionally large sessions**: a session, or a single thread inside one, that is too large for the server to check is held at that point; the rest of the session is judged and paid as usual, and the held part is checked once the server can take it.
 * **Under review.** A person will look at it; there is nothing for you to change. This covers:
   * **Over a limit above.** More failed tool calls or scheduled prompts than the requirements allow.
-  * **Exceptionally large sessions.** A session too large for the server to check yet is held, and is checked once the server can take it.
   * **Fragments.** Content that is already fully contained in another session you uploaded.
   * **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. The session is released only if a reviewer finds the hit was a false positive.
 
