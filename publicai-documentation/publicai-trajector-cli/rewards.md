@@ -140,7 +140,7 @@ Something stops the session being accepted for now, and it earns nothing _yet_. 
 * **Waiting on us.** Something has to be settled on our side first, such as confirming the version of the model the session ran on. There is nothing for you to change. This also covers **exceptionally large sessions**: a session, or a single thread inside one, that is too large for the server to check is held at that point; the rest of the session is judged and paid as usual, and the held part is checked once the server can take it.
 * **Under review.** A person will look at it; there is nothing for you to change. This covers:
   * **Over a limit above.** More failed tool calls or scheduled prompts than the requirements allow.
-  * **Over the size limit.** More than 2 GiB of raw capture, or more than 3,000 calls, in one session. Such a session is not checked automatically; a reviewer decides whether it is paid.
+  * **Over the size limit.** More than 6 GiB of raw capture in one session. Such a session is not checked automatically; a reviewer decides whether it is paid.
   * **Fragments.** Content that is already fully contained in another session you uploaded.
   * **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. The session is released only if a reviewer finds the hit was a false positive.
 
