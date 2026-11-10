@@ -1,6 +1,6 @@
 # Rewards
 
-_Last updated: October 23, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
+_Last updated: November 10, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
 
 Trajector pays you for the coding sessions you contribute. This page explains exactly how much you earn, when it lands in your balance, and how you get it out.
 
@@ -10,7 +10,7 @@ The short version:
 
 ### During the beta: what is collected
 
-Only **`claude-fable-5`**, **`claude-fable-5-1`**, **`claude-opus-5`** and **`claude-opus-5-5`** coding sessions are collected and rewarded right now. If you are already on one of those, there is nothing to do. Otherwise switching takes one flag:
+Only **`claude-fable-5`**, **`claude-fable-5-1`**, **`claude-fable-5-2`**, **`claude-opus-5`** and **`claude-opus-5-5`** coding sessions are collected and rewarded right now. If you are already on one of those, there is nothing to do. Otherwise switching takes one flag:
 
 ```bash
 # One-off: launch Claude Code on a collected model
@@ -20,7 +20,7 @@ claude --model claude-opus-5-5
 export ANTHROPIC_MODEL=claude-opus-5-5
 ```
 
-Inside a running session you can also type `/model claude-opus-5-5` (or `/model claude-opus-5`, `/model claude-fable-5` or `/model claude-fable-5-1`).
+Inside a running session you can also type `/model claude-opus-5-5` (or `/model claude-opus-5`, `/model claude-fable-5`, `/model claude-fable-5-1` or `/model claude-fable-5-2`).
 
 What happens to everything else:
 
