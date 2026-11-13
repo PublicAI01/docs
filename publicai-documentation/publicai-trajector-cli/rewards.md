@@ -1,6 +1,6 @@
 # Rewards
 
-_Last updated: November 10, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
+_Last updated: November 13, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
 
 Trajector pays you for the coding sessions you contribute. This page explains exactly how much you earn, when it lands in your balance, and how you get it out.
 
@@ -42,13 +42,7 @@ Rewards are priced per **LLM token**, not per session, per hour, or per line of 
 reward (USD) = tokens in the accepted session × rate per token
 ```
 
-The current rate is **$0.000001 per token** — that is, **$1.00 per million tokens**.
-
-| Tokens contributed | Reward |
-| ------------------ | ------ |
-| 100,000            | $0.10  |
-| 1,000,000          | $1.00  |
-| 10,000,000         | $10.00 |
+The rate per token is shown on your [Claim page](https://trajector.publicai.io/claim) after you sign in. When the rate changes, the Claim page shows the new rate and the date it took effect.
 
 A few things worth knowing about the rate:
 
