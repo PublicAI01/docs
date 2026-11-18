@@ -16,6 +16,10 @@ commands:
   upload       upload captured data now [--force]
   forget       delete one session's not-yet-uploaded records from this machine [<session-id>]
   upgrade      install the newest published release over this one
+  repo assess  print counts read from a git repository's history and paths;
+               sends nothing [<path>] [--json]; --submit --preview=<file>
+               sends them with each commit's message and paths, after you
+               read it all and confirm
   version      print the trajector version
   proxy run    run the local proxy (internal; started automatically)
   hook         session hook entry points (internal; injected by enable)
@@ -420,6 +424,26 @@ These exit `1`:
 * **Another upgrade is running on this device.** `upgrade` waits two seconds, then says so; try again in a minute.
 * **An earlier upgrade was interrupted** before the new build accepted it. `upgrade` puts the previous binary back, says which version it put back, and stops there; run it again.
 * **Anything else fails** — network, checksum mismatch, no matching asset, a path that cannot be written. The binary you have is left **exactly as it was**: the checksum is verified before anything is replaced, and a target that is not a file is refused outright.
+
+### `trajector repo assess [<path>] [--json]`
+
+Prints a readout of one git repository: counts read from its history and its file paths, such as how many commits change tests and implementation code together. It reads the repository that contains `<path>`, or the current directory. It runs only read-only `git` commands, opens no file in the repository, needs no enabled project, and sends nothing. `--json` prints the same readout as JSON.
+
+#### `trajector repo assess [<path>] --submit --preview=<file>`
+
+Sends that readout, each commit's message and changed paths, and your answers to four questions to the trajector service — after it writes all of it to `<file>`, shows the repository assessment terms, and asks you to confirm. The device must be paired. [Share a past project](repo-assess.md) walks through it and lists what is sent.
+
+```
+usage: trajector repo assess [<path>] [--json]
+       trajector repo assess [<path>] --submit --preview=<file> [--ownership=<answer>]
+              [--ever-public=<answer>] [--in-production=<answer>] [--ai-share=<answer>] [--yes]
+```
+
+| Flag                                                                 | Effect                                                                                                                                                      |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--preview=<file>`                                                   | Required with `--submit`. Everything the submission sends is written there first. The file must not exist yet                                               |
+| `--ownership=`, `--ever-public=`, `--in-production=`, `--ai-share=`  | Answer a question without being asked. A value the question does not have is refused, and the message lists the ones it takes                               |
+| `--yes`                                                              | Skip the last confirmation. It never accepts the terms: run the command once without it to read and accept them                                             |
 
 ### `trajector version`
 

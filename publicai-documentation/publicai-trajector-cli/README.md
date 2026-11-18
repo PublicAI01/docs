@@ -52,6 +52,7 @@ Records from all three sources wait in a local spool with a bounded disk quota. 
 | Look up a flag or an exit code          | Command reference             |
 | Understand what `status` is telling you | Reading `status` and `doctor` |
 | Know exactly what is collected          | Data and privacy              |
+| Tell us about a past project            | Share a past project          |
 | Fix something                           | Troubleshooting               |
 
 The client is fully open source at [PublicAI01/trajector-cli](https://github.com/PublicAI01/trajector-cli); every statement in these pages can be checked against the code.

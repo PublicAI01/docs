@@ -134,6 +134,10 @@ Each batch carries a client-side idempotency key, so a retried upload can never 
 
 The upload destination can be changed only through `config.json` in your user config directory, never through an environment variable — see Files, configuration, and environment. A non-default destination is announced at `enable` and at proxy start; it is never silent.
 
+#### A repository you submit
+
+`trajector repo assess --submit` is not part of recording. It runs only when you run it, on the one repository you name, under terms of its own, and sends one submission after you have read all of it and confirmed. [Share a past project](repo-assess.md) lists what it sends and what it does not.
+
 #### The upgrade check
 
 Trajector also asks GitHub whether a newer release exists. The request is an HTTPS `GET` to `https://api.github.com/repos/PublicAI01/trajector-cli/releases`, unless `releases_url` in `config.json` names another `https` source. The only header it sets is `User-Agent: trajector/<version>`: it carries no token, no project data, and no identifier of this device. GitHub sees the network address the request comes from.
