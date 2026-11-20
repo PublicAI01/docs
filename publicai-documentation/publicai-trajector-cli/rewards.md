@@ -1,6 +1,6 @@
 # Rewards
 
-_Last updated: November 19, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
+_Last updated: November 20, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
 
 Trajector pays you for the coding sessions you contribute. This page explains exactly how much you earn, when it lands in your balance, and how you get it out.
 
@@ -135,14 +135,15 @@ Besides being on a collected model (top of this page) and carrying reasoning sum
 | Requirement             | Accepted when                                                                                                                                                                                       |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | It changes code         | At least one code file is written — a source, configuration or build file — by `Edit`, `MultiEdit`, `Write` or `NotebookEdit`, or by a shell command that writes one. Prose such as `.md` or `.txt` and data such as `.csv` do not count |
-| You asked for something | At least one prompt you typed                                                                                                                                                                       |
+| You asked for something | At least 2 prompts you typed. "continue"-style nudges and messages relayed by an orchestrator or scheduler do not count |
 | The agent acted         | At least one tool call                                                                                                                                                                              |
 | Model responses         | At least 5                                                                                                                                                                                          |
-| Responses with thinking | At least 3                                                                                                                                                                                          |
+| Responses with thinking | At least 3 |
+| Different tools | At least 5 different tools used. A typical accepted session runs commands, reads files, writes and edits code, and uses at least one more tool — for example tool search, web search, an MCP tool, a skill, or a subagent |
 | Failed tool calls       | At most 25% of tool results are errors                                                                                                                                                              |
-| Scheduled prompts       | At most 25% of your prompts come from a scheduled task                                                                                                                                              |
+| Scheduled prompts | At most 25% of your prompts are automatic: a scheduled task, a keepalive, a bare "continue" or a repeat of your last prompt |
 
-Code writes are counted over the whole session, subagents included. The other requirements are checked on each conversation in the session — the main one and each subagent's — separately, and **My data** shows each on its own chain line.
+Code writes and different tools are counted over the whole session, subagents included. Prompts you typed and automatic prompts are counted on the main conversation; a prompt you reuse across many of your sessions counts only in the first few. The requirements on prompts you typed, different tools and automatic prompts apply to sessions first uploaded on or after November 20, 2026, 12:00 UTC; a session first uploaded earlier needs at least one prompt you typed and at most 25% of its prompts from a scheduled task. The other requirements are checked on each conversation in the session — the main one and each subagent's — separately, and **My data** shows each on its own chain line.
 
 #### ✅ Accepted — credited
 
@@ -154,12 +155,12 @@ The session passed every check. It is credited to your balance, and the session 
 
 Something stops the session being accepted for now, and it earns nothing _yet_. What happens next depends on why it is held; **My data** shows which of these applies, next to _held_:
 
-* **Too short so far.** Fewer model responses, responses with thinking or tool calls than the requirements above. No reviewer is involved: keep working in the session, and it is accepted on its own once it passes the minimums.
+* **Too short so far.** Fewer prompts you typed, model responses, responses with thinking, tool calls or different tools than the requirements above. No reviewer is involved: keep working in the session, and it is accepted on its own once it passes the minimums.
 * **Not a coding session.** No code file was written (the first requirement above). Trajector pays for coding sessions only, so such a session is held and is not paid.
 * **No buyer yet.** Part of the session — usually a subagent — ran on a model outside the collected list at the top of this page. Keep subagents on a collected model too.
 * **Waiting on us.** Something has to be settled on our side first, such as confirming the version of the model the session ran on. There is nothing for you to change. This also covers **exceptionally large sessions**: a session, or a single thread inside one, that is too large for the server to check is held at that point; the rest of the session is judged and paid as usual, and the held part is checked once the server can take it.
 * **Under review.** A person will look at it; there is nothing for you to change. This covers:
-  * **Over a limit above.** More failed tool calls or scheduled prompts than the requirements allow.
+  * **Over a limit above.** More failed tool calls or automatic prompts than the requirements allow.
   * **Fragments.** Content that is already fully contained in another session you uploaded.
   * **Secrets or personal data found by the server's second-pass scan.** The CLI redacts locally before anything leaves your machine; the server scans again as a safety net. A hit sends the session to review rather than rejecting it, because the scan can also miss a new kind of secret the CLI does not mask yet — that is something we need to see. The session is released only if a reviewer finds the hit was a false positive.
 
