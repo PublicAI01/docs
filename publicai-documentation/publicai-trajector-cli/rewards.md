@@ -1,6 +1,6 @@
 # Rewards
 
-_Last updated: November 16, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
+_Last updated: November 19, 2026. This page is the program rules referred to in §5 of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms)._
 
 Trajector pays you for the coding sessions you contribute. This page explains exactly how much you earn, when it lands in your balance, and how you get it out.
 
@@ -28,6 +28,8 @@ What happens to everything else:
 * Rejected data is **not retroactively accepted** if the scope later widens — please don't keep uploading in the hope that it will be.
 * Sessions waiting on manual review are kept until a decision is made.
 
+`claude-opus-5` and `claude-opus-5-5` calls currently earn 33% of the token rate; the other collected models earn the full rate (§1, _Some models earn a share of the token rate_).
+
 Tip: sessions recorded with thinking effort set to `max` are more valuable to the current buyer. That is a recommendation, not a requirement — every effort level is accepted and rewarded the same.
 
 Withdrawals are open during the beta. The rules on this page — collection scope, rates, limits, acceptance rules and the holding period — may change. A change applies from the moment it is published here, with the date at the top of this page; rewards already credited are never repriced. A new version of the [Beta Program Terms](https://trajector.publicai.io/legal/beta-terms) is a different matter: you have 30 days to accept it, after which uploads require it. Your balance can always be withdrawn either way.
@@ -49,6 +51,7 @@ A few things worth knowing about the rate:
 * **It is set by the platform and can change.** It is a configuration value, not something hard-coded into a release, so it can be adjusted as the business evolves.
 * **A rate change is never retroactive.** The rate in effect at the moment a session is credited is written permanently into that ledger entry. Rewards you already earned are never repriced — up or down — by a later change.
 * **The rate is the same for everyone.** There is no per-user pricing.
+* **Some models earn a share of it.** The share depends on the model that answered a call, not on who you are (_Some models earn a share of the token rate_, below).
 
 #### What counts as a token
 
@@ -81,12 +84,12 @@ The rule applies from 17 September 2026. It changes the USD amount of a reward, 
 
 **The rule.**
 
-* A call the proxy saw earns the full token rate: `tokens × rate`.
-* A call the proxy didn't see earns **25% of the token rate**: `tokens × rate × 0.25`.
+* A call the proxy saw earns the full rate for its model. For most models that is `tokens × rate`; some models earn only a share of it (_Some models earn a share of the token rate_, below).
+* A call the proxy didn't see earns **25% of what it would earn if the proxy had seen it**: `tokens × rate × 0.25`, multiplied by the model's share where the model has one.
 * The tokens of a call the proxy didn't see are still counted in full — in **Total Tokens Contributed**, in the **Tokens** column of **My data**, and against the daily volume caps. Only the USD amount is reduced.
 * Whether a session is accepted, held or rejected (§2) is decided separately from this rule. This rule only changes what an accepted call is worth.
 
-**What you see.** Each ledger entry records whether the proxy saw the call it paid for and the multiplier applied, so every amount in your balance can be traced back to this rule. **My data** shows, per session, how many of its calls the proxy didn't see and the amount earned at 25%; each chain line shows which of its calls those were. On a day when some of your calls weren't seen, `trajector status` says so too.
+**What you see.** Each ledger entry records whether the proxy saw the call it paid for and the multiplier applied, so every amount in your balance can be traced back to this rule. **My data** shows, per session, how many of its calls the proxy didn't see and the amount those earned at 25% of their model's rate; each chain line shows which of its calls those were. On a day when some of your calls weren't seen, `trajector status` says so too.
 
 **Not retroactive.** Calls credited before this rule took effect keep the amount they were credited at. The multiplier is written permanently into each ledger entry when the call is credited; a later change to the multiplier — in either direction — applies only to calls credited after that change, exactly as a change to the token rate does (§1). A call credited at 25% is not re-credited if the proxy later reports the same call.
 
@@ -95,6 +98,29 @@ The rule applies from 17 September 2026. It changes the USD amount of a reward, 
 **Why live recording counts too.** A session file that reaches us _while the session is still running_ carries one thing a file uploaded afterwards does not: the times its parts arrived at our servers, measured by our clocks. Work that is really happening arrives in step with itself — a morning of work cannot arrive in ten seconds. That arrival rhythm is ours, not yours, and it is what a live recording is paid on. Nothing you send us about when something happened is part of this: only when we received it.
 
 This matters most if you cannot run the proxy at all. The Claude desktop app talks to Anthropic directly and ignores the settings the CLI uses, so there is no proxy to run — those sessions are not a lower tier of trust, they simply have no proxy available. Running Claude Code through the CLI's recording proxy — the default when the CLI is installed and enabled — still means the proxy sees every call, and is the simplest way to earn the full rate.
+
+#### Some models earn a share of the token rate
+
+Every collected model is accepted the same way, but not every model earns the same share of the token rate:
+
+| Model | Share of the token rate |
+| --- | --- |
+| `claude-fable-5`, `claude-fable-5-1`, `claude-fable-5-2` | full rate |
+| `claude-opus-5`, `claude-opus-5-5` | **33%** |
+
+**The rule.**
+
+* The share is decided per call, by the model that answered that call. In a session that uses more than one model, each call earns its own model's share.
+* A `claude-opus-5` or `claude-opus-5-5` call earns `tokens × rate × 0.33`.
+* This rule and the proxy rule above both apply, and they multiply: a `claude-opus-5` or `claude-opus-5-5` call the recording proxy didn't see earns `tokens × rate × 0.25 × 0.33`.
+* The tokens of these calls are still counted in full — in **Total Tokens Contributed**, in the **Tokens** column of **My data**, and against the daily volume caps. Only the USD amount is reduced.
+* Whether a session is accepted, held or rejected (§2) is decided separately from this rule.
+
+**Why.** The share follows what data from each model is currently worth to buyers. It can change in either direction as that changes; any change is posted here.
+
+**What you see.** The [Claim page](https://trajector.publicai.io/claim) states the share next to the current rate. In **My data**, each chain line on one of these models states the current share. Each ledger entry records the multiplier applied to the call it paid for, so a call credited before the share applied shows the amount it was credited at.
+
+**Not retroactive.** The rule applies to calls credited after it was posted here. Calls credited earlier keep the amount they were credited at, and a later change to a share applies only to calls credited after that change, exactly as a change to the token rate does.
 
 ***
 
@@ -161,7 +187,7 @@ The dashboard shows three numbers:
 | **Total Reward**     | Everything you have ever earned. Does **not** go down when you claim.                                       |
 | **Total Tokens**     | Lifetime tokens credited across all accepted sessions, counted in full whether or not the proxy saw the call. |
 
-Total Reward isn't simply Total Tokens × rate: tokens are counted in full for every credited call, while the USD amount is the full rate for calls the recording proxy saw and 25% of it for calls it didn't see (§1, _Calls the recording proxy didn't see_).
+Total Reward isn't simply Total Tokens × rate: tokens are counted in full for every credited call, while the USD amount is the full rate for calls the recording proxy saw and 25% of it for calls it didn't see (§1, _Calls the recording proxy didn't see_), and some models earn a share of the rate (§1, _Some models earn a share of the token rate_).
 
 Below them you'll find a breakdown by agent type (Claude Code, Cursor, Codex, Gemini CLI, …) with tokens and session counts, and a daily contribution chart so you can see your contribution rhythm over time.
 
